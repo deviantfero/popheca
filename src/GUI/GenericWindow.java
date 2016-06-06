@@ -25,7 +25,7 @@ public class GenericWindow extends GridPane {
 		this.window.setTitle( "Generic Window" );
 		super.setVgap(10);
 		super.setHgap(10);
-		super.setPadding( new Insets( 10, 10, 10, 10 ) );
+		super.setPadding( new Insets( 15, 15, 15, 15 ) );
 		this.width = width;
 		this.height = height;
 		this.wscene = new Scene( this, this.width, this.height );
@@ -39,7 +39,7 @@ public class GenericWindow extends GridPane {
 		this.window.setTitle( title );
 		super.setVgap(10);
 		super.setHgap(10);
-		super.setPadding( new Insets( 10, 10, 10, 10 ) );
+		super.setPadding( new Insets( 15, 15, 15, 15 ) );
 		this.width = width;
 		this.height = height;
 		this.wscene = new Scene( this, this.width, this.height );
@@ -53,7 +53,21 @@ public class GenericWindow extends GridPane {
 		this.window.setTitle( "Generic Window" );
 		super.setVgap(10);
 		super.setHgap(10);
-		super.setPadding( new Insets( 10, 10, 10, 10 ) );
+		super.setPadding( new Insets( 15, 15, 15, 15 ) );
+		this.width = 400;
+		this.height = 300;
+		this.wscene = new Scene( this, this.width, this.height );
+		this.window.setScene( this.wscene );
+		this.window.show();
+	}
+
+	public GenericWindow( String title ){
+		super();
+		this.window = new Stage();
+		this.window.setTitle( title );
+		super.setVgap(10);
+		super.setHgap(10);
+		super.setPadding( new Insets( 15, 15, 15, 15 ) );
 		this.width = 400;
 		this.height = 300;
 		this.wscene = new Scene( this, this.width, this.height );
