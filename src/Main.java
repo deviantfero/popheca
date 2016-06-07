@@ -32,7 +32,9 @@ public class Main extends Application {
 	public void start( Stage loginStage ) {
 //		loginStage.setTitle( "Login" );
 
-		LoginWindow layout = new LoginWindow();
+		GenericWindow main_window = new GenericWindow( "Login", 600, 600 );
+		main_window.setResizable( false );
+		LoginGrid login = new LoginGrid( 600, 600, main_window );
 
 //		loginStage.setScene( layout.getWScene() );
 //		loginStage.show();
