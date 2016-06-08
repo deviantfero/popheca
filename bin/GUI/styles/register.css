@@ -1,3 +1,8 @@
 .root {
 	-fx-background-image: url( "./img/old_moon.jpg" );
 }
+
+.button_back {
+	-fx-font-weight: bolder;
+	-fx-fill: #101010;
+}

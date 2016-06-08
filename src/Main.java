@@ -1,8 +1,4 @@
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import GUI.*;
 
@@ -32,9 +28,9 @@ public class Main extends Application {
 	public void start( Stage loginStage ) {
 //		loginStage.setTitle( "Login" );
 
-		GenericWindow main_window = new GenericWindow( "Login", 600, 600 );
+		GenericWindow main_window = new GenericWindow( "Login", 700, 600 );
 		main_window.setResizable( false );
-		LoginGrid login = new LoginGrid( 600, 600, main_window );
+		LoginGrid login = new LoginGrid( 700, 600, main_window, false );
 
 //		loginStage.setScene( layout.getWScene() );
 //		loginStage.show();

@@ -1,3 +1,18 @@
 .root {
 	-fx-background-image: url( "./img/background.jpg" );
+	-fx-font-smoothing-type: lcd;
+}
+
+.button {
+}
+
+.lbl_error {
+	-fx-fill: darkred !important;
+	-fx-font-weight: bolder;
+}
+
+.grid {
+	-fx-background-color: #fff !important;
+	-fx-background-radius: 5.0;
+	-fx-padding: 10px;
 }
