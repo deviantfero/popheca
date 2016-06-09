@@ -17,10 +17,10 @@ import javafx.stage.Stage;
 public class RegisterGrid extends GridPane {
 	private Scene mainScene;
 	private GridPane form;
+	private boolean translate;
 
 	private Button button_submit;
 	private Button button_back;
-	private Button button_translate;
 	private Text lbl_name;
 	private Text lbl_lastname;
 	private Text lbl_email;
@@ -36,6 +36,7 @@ public class RegisterGrid extends GridPane {
 
 	public RegisterGrid( int width, int height, Stage mainStage, boolean translate ) {
 		super();
+		this.translate = translate;
 		this.form = new GridPane();
 		this.mainScene = new Scene( this, width, height );
 		//setting up gridpane
@@ -65,10 +66,7 @@ public class RegisterGrid extends GridPane {
 			@Override
 			public void handle( ActionEvent e ) {
 				mainStage.setTitle( "Login" );
-				if( translate )
-					mainStage.setScene( new LoginGrid( width, height, mainStage, true ).getMainScene() );
-				else
-					mainStage.setScene( new LoginGrid( width, height, mainStage, false ).getMainScene() );
+					mainStage.setScene( new LoginGrid( width, height, mainStage, translate ).getMainScene() );
 			}
 		});
 
@@ -84,19 +82,9 @@ public class RegisterGrid extends GridPane {
 			}
 		});
 
-		this.button_translate = new Button( "English" );
-		this.button_translate.setMinWidth( 120 );
-		this.button_translate.setOnAction( new EventHandler<ActionEvent>() {
-			@Override
-			public void handle( ActionEvent e ) {
-				translate_register();
-			}
-		});
-
 		if( translate )
 			translate_register();
 
-		this.form.add( this.button_translate, 0, 0 );
 		this.form.add( this.lbl_name, 0, 1 );
 		this.form.add( this.txt_name, 1, 1 );
 		this.form.add( this.lbl_lastname, 0, 2 );
@@ -124,14 +112,13 @@ public class RegisterGrid extends GridPane {
 	}
 
 	private void translate_register() {
-		if( button_translate.getText().equals( "Español" ) ){
+		if( !this.translate ){
 			this.lbl_username.setText( "Alias: " );
 			this.lbl_name.setText( "Nombre: " );
 			this.lbl_lastname.setText( "Apellido: " );
 			this.lbl_newPass.setText( "Contraseña: " );
 			this.lbl_newPassConfirm.setText( "Repetir contraseña: " );
 			this.button_submit.setText( "Confirmar" );
-			this.button_translate.setText( "English" );
 		}else{
 			this.lbl_username.setText( "Username: " );
 			this.lbl_name.setText( "Name: " );
@@ -139,7 +126,6 @@ public class RegisterGrid extends GridPane {
 			this.lbl_newPass.setText( "Password: " );
 			this.lbl_newPassConfirm.setText( "Confirm password: " );
 			this.button_submit.setText( "Submit" );
-			this.button_translate.setText( "Español" );
 		}
 	}
 

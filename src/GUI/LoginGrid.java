@@ -3,6 +3,7 @@ package GUI;
 import java.io.File;
 import java.io.IOException;
 
+import encrypt.*;
 import GUI.proc.Loader;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
@@ -67,8 +68,6 @@ public class LoginGrid extends GridPane {
 			public void handle( ActionEvent e ) {
 				System.out.println( "Login..." );
 				if( validate_login() ){
-					txt_user.clear();
-					txt_password.clear();
 					System.out.println( "Success" );
 				}else{
 					System.out.println( "Invalid data" );
@@ -140,9 +139,10 @@ public class LoginGrid extends GridPane {
 
 	private boolean validate_login() {
 		if( this.txt_user.getText().matches( "^[a-zA-Z0-9](_(?!(\\.|_))|\\.(?!(_|\\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$" ) 
-			&& this.txt_password.getText().matches(".{4,16}"))
+				&& this.txt_password.getText().matches(".{4,16}")){
+			this.lbl_error.setText( MD5.encrypt(txt_password.getText()) );
 			return true;
-		else
+		}else
 			return false;
 	}
 
