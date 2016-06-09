@@ -135,9 +135,9 @@ public class RegisterGrid extends GridPane {
 			&& this.txt_username.getText().matches( "^[a-zA-Z0-9](_(?!(\\.|_))|\\.(?!(_|\\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$" ) 
 			&& this.txt_email.getText().matches( "^[a-zA-Z0-9]+([ _-]|\\.)?[A-Za-z0-9]+@[a-z]+\\.[a-z\\.]+" ) 
 			&& this.txt_newPass.getText().equals( this.txt_newPassConfirm.getText() )
-			&& this.txt_newPass.getText().matches(".{4,16}"))
+			&& this.txt_newPass.getText().matches(".{4,16}")){
 			return true;
-		else
+		}else
 			return false;
 	}
 }
