@@ -1,4 +1,4 @@
-package encrypt;
+package dblib;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

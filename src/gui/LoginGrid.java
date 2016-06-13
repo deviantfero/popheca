@@ -1,10 +1,10 @@
-package GUI;
+package gui;
 
 import java.io.File;
 import java.io.IOException;
 
-import encrypt.*;
-import GUI.proc.Loader;
+import dblib.*;
+import gui.proc.Loader;
 import javafx.event.ActionEvent;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -25,11 +25,11 @@ public class LoginGrid extends GridPane {
 
 	private Button button_login;
 	private Button button_register;
-	private Text lbl_user;
+	private Text lbl_email;
 	private Text lbl_password;
 	private Text lbl_error;
 	private Button button_translate;
-	private TextField txt_user;
+	private TextField txt_email;
 	private PasswordField txt_password;
 
 	public LoginGrid( int width, int height, Stage mainStage, boolean translate ) {
@@ -42,15 +42,15 @@ public class LoginGrid extends GridPane {
 		super.setHgap( 10 );
 		this.form.setVgap( 10 );
 		this.form.setHgap( 10 );
-		this.lbl_user = new Text( "Usuario: " );
+		this.lbl_email = new Text( "Email: " );
 		this.lbl_password = new Text( "Contraseña: " );
 		this.lbl_error = new Text( "" );
 		this.lbl_error.setTextAlignment( TextAlignment.CENTER );
 		this.lbl_error.getStyleClass().add( "lbl_error" );
-		this.txt_user = new TextField();
-		this.txt_user.setMaxWidth( 120 );
+		this.txt_email = new TextField();
+		this.txt_email.setMaxWidth( 150 );
 		this.txt_password = new PasswordField();
-		this.txt_password.setMaxWidth( 120 );
+		this.txt_password.setMaxWidth( 150 );
 		this.button_translate = new Button( "English" );
 		this.button_translate.setMinWidth( 120 );
 		this.button_translate.setOnAction( new EventHandler<ActionEvent>() {
@@ -68,15 +68,18 @@ public class LoginGrid extends GridPane {
 			public void handle( ActionEvent e ) {
 				System.out.println( "Login..." );
 				if( validate_login() ){
-					System.out.println( "Success" );
+					boolean exists = SQLInteractor.searchUser( txt_email.getText(), txt_password.getText() );
+					if( exists ){
+						lbl_error.setText( "Usuario encontrado, login correcto" );
+						SQLInteractor.setActive( txt_email.getText(), txt_password.getText() );
+						//abrir ventana nueva aqui
+					}
 				}else{
 					System.out.println( "Invalid data" );
 					if( button_translate.getText().equals("Español") )
 						lbl_error.setText( "Invalid user or password" );
 					else
 						lbl_error.setText( "Usuario o contraseña invalidos" );
-					txt_user.clear();
-					txt_password.clear();
 				}
 			}
 		});
@@ -101,18 +104,19 @@ public class LoginGrid extends GridPane {
 			translate_login();
 
 		this.form.add( this.button_translate, 0, 0 );
-		this.form.add( this.lbl_user, 0, 2 );
+		this.form.add( this.lbl_email, 0, 2 );
 		this.form.add( this.lbl_password, 0, 3 );
-		this.form.add( this.txt_user, 1, 2 );
+		this.form.add( this.txt_email, 1, 2 );
 		this.form.add( this.txt_password, 1, 3 );
 		this.form.add( this.button_login, 0, 4 );
 		this.form.add( this.button_register, 1, 4 );
 		super.add( this.lbl_error, 0, 0, 2, 1 );
 		//this Centers the error
 		super.setHalignment( this.lbl_error, HPos.CENTER );
-		super.setMargin( this.lbl_error, new Insets( 100, 10, 0, 0 ) );
+		super.setMargin( this.lbl_error, new Insets( 100, 30, 0, 0 ) );
 		super.add( this.form, 0, 1, 2, 1 );
-		super.setMargin( this.form, new Insets( 60, 600, 0, 210 ));
+		//top, right, bottom, left
+		super.setMargin( this.form, new Insets( 60, 230, 0, 180 ));
 		super.getColumnConstraints().add( new ColumnConstraints(350) );
 		super.getColumnConstraints().add( new ColumnConstraints(350) );
 		mainStage.setScene( this.mainScene );
@@ -125,12 +129,10 @@ public class LoginGrid extends GridPane {
 	
 	private void translate_login() {
 		if( button_translate.getText().equals( "Español" ) ){
-			this.lbl_user.setText( "Usuario: " );
 			this.lbl_password.setText( "Contraseña: " );
 			this.button_register.setText( "Registarse" );
 			this.button_translate.setText( "English" );
 		}else{
-			this.lbl_user.setText( "User: " );
 			this.lbl_password.setText( "Password: " );
 			this.button_register.setText( "Register" );
 			this.button_translate.setText( "Español" );
@@ -138,8 +140,8 @@ public class LoginGrid extends GridPane {
 	}
 
 	private boolean validate_login() {
-		if( this.txt_user.getText().matches( "^[a-zA-Z0-9](_(?!(\\.|_))|\\.(?!(_|\\.))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]$" ) 
-				&& this.txt_password.getText().matches(".{4,16}")){
+		if( this.txt_email.getText().matches( "^[a-zA-Z0-9]+([ _-]|\\.)?[A-Za-z0-9]+@[a-z]+\\.[a-z\\.]+" ) 
+				&& this.txt_password.getText().matches(".{4,100}")){
 			this.lbl_error.setText( MD5.encrypt(txt_password.getText()) );
 			return true;
 		}else

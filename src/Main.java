@@ -1,6 +1,7 @@
 import javafx.application.Application;
 import javafx.stage.Stage;
-import GUI.*;
+import gui.*;
+import dblib.*;
 
 /* **************************************************
  * when creating a window we need to override
@@ -21,7 +22,6 @@ import GUI.*;
 public class Main extends Application {
 	public static void main( String[] args ) {
 		launch(args);
-		System.out.println( "I Am done!" );
 	}
 
 	@Override
@@ -35,5 +35,11 @@ public class Main extends Application {
 //		loginStage.setScene( layout.getWScene() );
 //		loginStage.show();
 		
+	}
+
+	@Override
+	public void stop() {
+		SQLInteractor.closeUsers();
+		System.out.println( "Exit succesfully" );
 	}
 }

@@ -1,8 +1,8 @@
-package GUI;
+package gui;
 
 import java.io.File;
 
-import GUI.proc.Loader;
+import gui.proc.Loader;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
