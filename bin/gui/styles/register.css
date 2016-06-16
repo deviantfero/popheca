@@ -1,3 +1,19 @@
 .root {
-	-fx-background-image: url( "./img/old_moon.jpg" );
+	-fx-background-image: url( "./img/backback.jpg" );
+	-fx-font-smoothing-type: lcd;
+}
+
+.button {
+}
+
+.lbl_error {
+	-fx-fill: darkred !important;
+	-fx-font-weight: bolder;
+}
+
+.register_form {
+	-fx-background-image: url( "./img/pattclear.jpg" );
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+	-fx-background-radius: 5.0;
+	-fx-padding: 10px;
 }

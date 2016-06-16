@@ -62,7 +62,7 @@ public class LoginGrid extends GridPane {
 
 		this.button_login = new Button( "Login" );
 		this.button_login.getStyleClass().add( "button_login" );
-		this.button_login.setMinWidth( 120 );
+		this.button_login.setMinWidth( 150 );
 		this.button_login.setOnAction( new EventHandler<ActionEvent>() {
 			@Override
 			public void handle( ActionEvent e ) {
@@ -72,6 +72,13 @@ public class LoginGrid extends GridPane {
 					if( exists ){
 						lbl_error.setText( "Usuario encontrado, login correcto" );
 						SQLInteractor.setActive( txt_email.getText(), txt_password.getText() );
+						if( button_translate.getText().equals( "Español" ) ) {
+							mainStage.setTitle( "Search" );
+							mainStage.setScene( new SearchGrid( width, height, mainStage, true ).getMainScene() );
+						}else{
+							mainStage.setTitle( "Busqueda" );
+							mainStage.setScene( new SearchGrid( width, height, mainStage, false ).getMainScene() );
+						}
 						//abrir ventana nueva aqui
 					}
 				}else{
@@ -108,15 +115,15 @@ public class LoginGrid extends GridPane {
 		this.form.add( this.lbl_password, 0, 3 );
 		this.form.add( this.txt_email, 1, 2 );
 		this.form.add( this.txt_password, 1, 3 );
-		this.form.add( this.button_login, 0, 4 );
-		this.form.add( this.button_register, 1, 4 );
+		this.form.add( this.button_register, 0, 4 );
+		this.form.add( this.button_login, 1, 4 );
 		super.add( this.lbl_error, 0, 0, 2, 1 );
 		//this Centers the error
 		super.setHalignment( this.lbl_error, HPos.CENTER );
-		super.setMargin( this.lbl_error, new Insets( 100, 30, 0, 0 ) );
+		super.setMargin( this.lbl_error, new Insets( 100, 0, 0, 0 ) );
 		super.add( this.form, 0, 1, 2, 1 );
 		//top, right, bottom, left
-		super.setMargin( this.form, new Insets( 60, 230, 0, 180 ));
+		super.setMargin( this.form, new Insets( 60, 230, 0, 200 ));
 		super.getColumnConstraints().add( new ColumnConstraints(350) );
 		super.getColumnConstraints().add( new ColumnConstraints(350) );
 		mainStage.setScene( this.mainScene );
