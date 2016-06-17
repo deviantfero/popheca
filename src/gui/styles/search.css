@@ -1,0 +1,25 @@
+.root {
+	-fx-background-image: url( "./img/irongrip.png" );
+	-fx-font-smoothing-type: lcd;
+}
+
+.button {
+}
+
+.lbl_error {
+	-fx-fill: darkred !important;
+	-fx-font-weight: bolder;
+}
+
+.top {
+	-fx-background-image: url( "./img/pattclear.jpg" );
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);
+	-fx-background-radius: 5.0;
+	-fx-padding: 10px;
+}
+
+.welcome_message {
+	-fx-font-weight: bolder;
+	-fx-fill: #202020;
+	-fx-font-size: 14px;
+}
