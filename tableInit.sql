@@ -16,7 +16,7 @@ create table Reserva(
 	numNinnos int,
 	idFactura int not null,
 	idUsuario int not null,
-	idEstado varchar(5) not null,
+	idEstado int not null,
 	codTransporte varchar(7),
 	idHotel int not null
 );
@@ -41,7 +41,7 @@ alter table ReservaXEntrada add foreign key (codReserva) references Reserva on d
 alter table ReservaXEntrada add foreign key (codEntrada) references Entrada on delete cascade;
 
 create table Estado(
-	idEstado varchar(5) not null primary key,
+	idEstado serial primary key,
 	nomEstado varchar(20)
 );
 
@@ -52,7 +52,7 @@ create table Hotel(
 	nomHotel varchar(50) not null,
 	lvlHotel int not null default 0,
 	descrHotel varchar(300) not null default 'n/a',
-	idEstado varchar(5) not null
+	idEstado int not null
 );
 
 alter table Hotel add foreign key (idEstado) references Estado on delete cascade;
@@ -69,7 +69,7 @@ create table Habitacion (
 alter table Habitacion add foreign key (idHotel) references Hotel on delete cascade;
 
 create table PlanComida(
-	codPlan varchar(10) not null primary key,
+	codPlan serial primary key,
 	nomPlan varchar(20) not null,
 	descrPlan varchar(150) not null default 'n/a',
 	idHotel int not null
@@ -121,7 +121,7 @@ Alter table ReservaXHabitacion add foreign key (codHabitacion) references Habita
 
 Create Table ReservaXPlan (
 	codReserva int not null,
-	codPlan varchar(10),
+	codPlan int,
 	cantidad int default 1
 );
 

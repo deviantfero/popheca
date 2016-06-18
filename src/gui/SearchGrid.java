@@ -86,9 +86,8 @@ public class SearchGrid extends GridPane {
 		super.setHalignment( this.lbl_activeUser, HPos.CENTER );
 		super.setMargin( this.lbl_activeUser, new Insets( 0, 40, 0, 0 ) );
 		super.setMargin( this.txt_state, new Insets( 0, 0, 0, 90 ) );
-		super.setMargin( this.date_in, new Insets( 0, 0, 0, 90 ) );
+		super.setMargin( this.date_in, new Insets( 0, 0, 10, 90 ) );
 		super.setMargin( this.combo_amount, new Insets( 0, 90, 10, 0 ) );
-		super.setMargin( this.date_in, new Insets( 0, 0, 10, 0 ) );
 		super.setMargin( this.date_out, new Insets( 0, 0, 10, 0 ) );
 		super.add( this.top, 0, 0 );
 		if( this.translate )
