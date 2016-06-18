@@ -16,7 +16,9 @@ create table Reserva(
 	numNinnos int,
 	idFactura int not null,
 	idUsuario int not null,
-	idEstado varchar(5) not null
+	idEstado varchar(5) not null,
+	codTransporte varchar(7),
+	idHotel int not null
 );
 alter table Reserva add primary key (codReserva);
 alter table Reserva add foreign key (idUsuario) references Usuario on delete cascade;
@@ -54,6 +56,7 @@ create table Hotel(
 );
 
 alter table Hotel add foreign key (idEstado) references Estado on delete cascade;
+alter table Reserva add foreign key (idHotel) references Hotel on delete cascade;
 create table Habitacion (
 	codHabitacion serial primary key,
 	maxPerson int not null default 1,
@@ -83,6 +86,7 @@ create table Transporte(
 );
 
 alter table Transporte add foreign key (idHotel) references Hotel on delete cascade;
+alter table Reserva add foreign key (codTransporte) references Transporte on delete cascade;
 
 create Table AdminXCliente(
 	idAdmin int not null,
@@ -105,10 +109,31 @@ select * from EstadoReserva;
 alter table Habitacion add foreign key (EstadoReserva) references EstadoReserva on delete cascade;
 alter table Transporte add foreign key (EstadoReserva) references EstadoReserva on delete cascade;
 
+Create Table ReservaXHabitacion (
+	codReserva int not null,
+	codHabitacion int not null,
+	cantTipo int default 1
+);
+
+Alter Table ReservaXHabitacion Add Primary Key(codReserva, codHabitacion);
+ALter table ReservaXHabitacion add foreign key(codReserva) references Reserva on delete cascade;
+Alter table ReservaXHabitacion add foreign key (codHabitacion) references Habitacion on delete cascade;	
+
+Create Table ReservaXPlan (
+	codReserva int not null,
+	codPlan varchar(10),
+	cantidad int default 1
+);
+
+Alter table ReservaXPlan add primary key (codReserva, codPlan);
+ALter table ReservaXPlan add foreign key (codReserva) references Reserva on delete cascade;
+Alter table ReservaXPlan add foreign key (codPlan) references PlanComida on delete cascade;
+
 --drop table ReservaXEntrada;
 --drop table Reserva;
 --drop table Usuario;
 --drop table Transporte;
 --drop table Habitacion;
+--drop table PlanComida;
 
 insert into Usuario ( nomUsuario, apeUsuario, emailUsuario, passUsuario, cnxUsuario, rol ) values( 'root', 'admin', 'root@admin.com','63a9f0ea7bb98050796b649e85481845',false, 0 );
