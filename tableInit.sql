@@ -26,7 +26,8 @@ alter table Reserva add foreign key (idUsuario) references Usuario on delete cas
 create table Entrada(
 	codEntrada serial primary key,
 	tipoEntrada varchar (50) not null,
-	precioEntrada float not null
+	precioEntrada float not null,
+	idEstado int not null
 );
 
 create table ReservaXEntrada(
@@ -41,11 +42,12 @@ alter table ReservaXEntrada add foreign key (codReserva) references Reserva on d
 alter table ReservaXEntrada add foreign key (codEntrada) references Entrada on delete cascade;
 
 create table Estado(
-	idEstado serial primary key,
+	idEstado serial unique primary key,
 	nomEstado varchar(20)
 );
 
 alter table Reserva add foreign key (idEstado) references Estado on delete cascade;
+alter table Entrada add foreign key (idEstado) references Estado on delete cascade;
 
 create table Hotel(
 	idHotel serial primary key,
@@ -59,6 +61,7 @@ create table Hotel(
 
 alter table Hotel add foreign key (idEstado) references Estado on delete cascade;
 alter table Reserva add foreign key (idHotel) references Hotel on delete cascade;
+
 create table Habitacion (
 	codHabitacion serial primary key,
 	maxPerson int not null default 1,
@@ -131,11 +134,17 @@ Alter table ReservaXPlan add primary key (codReserva, codPlan);
 ALter table ReservaXPlan add foreign key (codReserva) references Reserva on delete cascade;
 Alter table ReservaXPlan add foreign key (codPlan) references PlanComida on delete cascade;
 
+
+--drop table ReservaXPlan;
+--drop table ReservaXHabitacion;
 --drop table ReservaXEntrada;
 --drop table Reserva;
 --drop table Usuario;
 --drop table Transporte;
 --drop table Habitacion;
 --drop table PlanComida;
+--drop table Entrada;
+--drop table Estado;
+--drop table Hotel;
 
 insert into Usuario ( nomUsuario, apeUsuario, emailUsuario, passUsuario, cnxUsuario, rol ) values( 'root', 'admin', 'root@admin.com','63a9f0ea7bb98050796b649e85481845',false, 0 );
