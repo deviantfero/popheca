@@ -1,5 +1,5 @@
 .root {
-	-fx-background-image: url( "./img/pattclear.jpg" );
+	-fx-background-image: url( "./img/LOGIN_BACK.jpg" );
 	-fx-font-smoothing-type: lcd;
 }
 
@@ -12,8 +12,14 @@
 }
 
 .grid {
-	-fx-background-image: url( "./img/pattclear.jpg" );
-	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+	-fx-background-color: rgba( 42, 59, 76, 0.6 );
+	/*-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);/**/
 	-fx-background-radius: 5.0;
-	-fx-padding: 10px;
+	-fx-padding: 30px;
+}
+
+#login_lbl {
+	-fx-fill: white !important;
+	-fx-font-weight: bolder;
+	-fx-font-size: 14px;
 }

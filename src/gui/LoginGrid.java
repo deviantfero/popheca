@@ -44,7 +44,9 @@ public class LoginGrid extends GridPane {
 		this.form.setVgap( 10 );
 		this.form.setHgap( 10 );
 		this.lbl_email = new Text( "Email: " );
+		this.lbl_email.setId( "login_lbl" );
 		this.lbl_password = new Text( "Contraseña: " );
+		this.lbl_password.setId( "login_lbl" );
 		this.lbl_error = new Text( "" );
 		this.lbl_error.setTextAlignment( TextAlignment.CENTER );
 		this.lbl_error.getStyleClass().add( "lbl_error" );
@@ -123,19 +125,22 @@ public class LoginGrid extends GridPane {
 			translate_login();
 
 		this.form.add( this.button_translate, 0, 0 );
+		super.setMargin( this.button_translate, new Insets( 20, 0, 0, 0 ) );
 		this.form.add( this.lbl_email, 0, 2 );
 		this.form.add( this.lbl_password, 0, 3 );
 		this.form.add( this.txt_email, 1, 2 );
 		this.form.add( this.txt_password, 1, 3 );
 		this.form.add( this.button_register, 0, 4 );
 		this.form.add( this.button_login, 1, 4 );
+		super.setMargin( this.button_login, new Insets( 10, 0, 10, 0 ) );
+		super.setMargin( this.button_register, new Insets( 10, 0, 10, 0 ) );
 		super.add( this.lbl_error, 0, 0, 2, 1 );
 		//this Centers the error
 		super.setHalignment( this.lbl_error, HPos.CENTER );
 		super.setMargin( this.lbl_error, new Insets( 100, 0, 0, 140 ) );
 		super.add( this.form, 0, 1, 2, 1 );
 		//top, right, bottom, left
-		super.setMargin( this.form, new Insets( 60, 230, 0, 270 ));
+		super.setMargin( this.form, new Insets( 50, 230, 0, 420 ));
 		super.getColumnConstraints().add( new ColumnConstraints(350) );
 		super.getColumnConstraints().add( new ColumnConstraints(350) );
 		mainStage.setScene( this.mainScene );

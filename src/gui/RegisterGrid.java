@@ -57,10 +57,15 @@ public class RegisterGrid extends GridPane {
 		this.txt_newPass = new PasswordField();
 		this.txt_newPassConfirm = new PasswordField();
 		this.lbl_name = new Text( "Nombre: " );
+		this.lbl_name.setId( "lbl_register" );
 		this.lbl_lastname = new Text( "Apellido: " );
+		this.lbl_lastname.setId( "lbl_register" );
 		this.lbl_email = new Text( "Email: " );
+		this.lbl_email.setId( "lbl_register" );
 		this.lbl_newPass = new Text( "Contraseña: " );
+		this.lbl_newPass.setId( "lbl_register" );
 		this.lbl_newPassConfirm = new Text( "Repetir contraseña: " );
+		this.lbl_newPassConfirm.setId( "lbl_register" );
 		this.lbl_error = new Text( "" );
 		this.lbl_error.setTextAlignment( TextAlignment.CENTER );
 		this.lbl_error.getStyleClass().add( "lbl_error" );
@@ -110,7 +115,7 @@ public class RegisterGrid extends GridPane {
 		super.add( this.lbl_error, 0, 0, 2, 1 );
 		super.add( this.form, 0, 1, 2, 1 );
 		super.setMargin( this.lbl_error, new Insets( 100, 0, 0, 5 ) );
-		super.setMargin( this.form, new Insets( 45, 500, 0, 250 ) );
+		super.setMargin( this.form, new Insets( 95, 500, 0, 220 ) );
 		super.setHalignment( this.lbl_error, HPos.CENTER );
 
 		mainStage.setScene( mainScene );

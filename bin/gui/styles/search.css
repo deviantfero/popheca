@@ -23,3 +23,14 @@
 	-fx-fill: #202020;
 	-fx-font-size: 14px;
 }
+
+.search_terms {
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);
+	-fx-background-radius: 5.0;
+	-fx-background-color: #DEDEDE;
+	-fx-padding: 10px;
+}
+
+.search_termstxt {
+	-fx-font-weight: bolder;
+}

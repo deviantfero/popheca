@@ -52,6 +52,8 @@ create table Hotel(
 	nomHotel varchar(50) not null,
 	lvlHotel int not null default 0,
 	descrHotel varchar(300) not null default 'n/a',
+	descrHotelEng varchar(300) not null default 'n/a',
+	direcHotel varchar(100) not null default 'n/a',
 	idEstado int not null
 );
 

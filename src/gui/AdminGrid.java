@@ -37,7 +37,8 @@ public class AdminGrid extends GridPane {
 		this.frame.getStyleClass().add( "frame" );
 		this.translate = translate;
 		this.activeUser = SQLInteractor.getActive();
-		this.button_manageUsers = new Button( "Admin corner" );
+		this.button_manageUsers = new Button( "Eliminar Usuarios" );
+		this.button_manageUsers.setMinWidth( 150 );
 		this.button_manageUsers.setOnAction( new EventHandler<ActionEvent>(){
 			@Override
 			public void handle( ActionEvent e ) {
@@ -45,6 +46,7 @@ public class AdminGrid extends GridPane {
 			}
 		});
 		this.button_search = new Button( "Search" );
+		this.button_search.setMinWidth( 150 );
 		this.button_search.setOnAction( new EventHandler<ActionEvent>() {
 			@Override
 			public void handle( ActionEvent e ) {
@@ -62,8 +64,10 @@ public class AdminGrid extends GridPane {
 		super.add( this.lbl_welcomeMessage, 0, 0 );
 		super.setHalignment( this.lbl_welcomeMessage, HPos.CENTER );
 		this.lbl_welcomeMessage.setTextAlignment( TextAlignment.CENTER );
+		GridPane.setMargin( this.button_search, new Insets( 10, 100, 10, 100 ) );
+		GridPane.setMargin( this.button_manageUsers, new Insets( 10, 100, 10, 100 ) );
 		super.add( this.frame, 0, 1 );
-		super.setMargin( this.frame, new Insets( 100, 100, 100, 100 ));
+		super.setMargin( this.frame, new Insets( 100, 300, 100, 100 ));
 
 		mainStage.setScene( this.mainScene );
 		mainStage.show();
