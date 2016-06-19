@@ -26,15 +26,10 @@ public class Main extends Application {
 
 	@Override
 	public void start( Stage loginStage ) {
-//		loginStage.setTitle( "Login" );
-
-		GenericWindow main_window = new GenericWindow( "Login", 700, 600 );
+		GenericWindow main_window = new GenericWindow( "Login", 850, 600 );
 		main_window.setResizable( false );
-		LoginGrid login = new LoginGrid( 700, 600, main_window, false );
-
-//		loginStage.setScene( layout.getWScene() );
-//		loginStage.show();
-		
+		LoginGrid login = new LoginGrid( 850, 600, main_window, false );
+		//BlankGrid blank = new BlankGrid( 850, 600, main_window, false );
 	}
 
 	@Override

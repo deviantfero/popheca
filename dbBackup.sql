@@ -98,12 +98,33 @@ ALTER SEQUENCE entrada_codentrada_seq OWNED BY entrada.codentrada;
 --
 
 CREATE TABLE estado (
-    idestado character varying(5) NOT NULL,
+    idestado integer NOT NULL,
     nomestado character varying(20)
 );
 
 
 ALTER TABLE estado OWNER TO fernando;
+
+--
+-- Name: estado_idestado_seq; Type: SEQUENCE; Schema: public; Owner: fernando
+--
+
+CREATE SEQUENCE estado_idestado_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE estado_idestado_seq OWNER TO fernando;
+
+--
+-- Name: estado_idestado_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: fernando
+--
+
+ALTER SEQUENCE estado_idestado_seq OWNED BY estado.idestado;
+
 
 --
 -- Name: estadoreserva; Type: TABLE; Schema: public; Owner: fernando
@@ -163,7 +184,7 @@ CREATE TABLE hotel (
     nomhotel character varying(50) NOT NULL,
     lvlhotel integer DEFAULT 0 NOT NULL,
     descrhotel character varying(300) DEFAULT 'n/a'::character varying NOT NULL,
-    idestado character varying(5) NOT NULL
+    idestado integer NOT NULL
 );
 
 
@@ -195,7 +216,7 @@ ALTER SEQUENCE hotel_idhotel_seq OWNED BY hotel.idhotel;
 --
 
 CREATE TABLE plancomida (
-    codplan character varying(10) NOT NULL,
+    codplan integer NOT NULL,
     nomplan character varying(20) NOT NULL,
     descrplan character varying(150) DEFAULT 'n/a'::character varying NOT NULL,
     idhotel integer NOT NULL
@@ -203,6 +224,27 @@ CREATE TABLE plancomida (
 
 
 ALTER TABLE plancomida OWNER TO fernando;
+
+--
+-- Name: plancomida_codplan_seq; Type: SEQUENCE; Schema: public; Owner: fernando
+--
+
+CREATE SEQUENCE plancomida_codplan_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE plancomida_codplan_seq OWNER TO fernando;
+
+--
+-- Name: plancomida_codplan_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: fernando
+--
+
+ALTER SEQUENCE plancomida_codplan_seq OWNED BY plancomida.codplan;
+
 
 --
 -- Name: reserva; Type: TABLE; Schema: public; Owner: fernando
@@ -216,7 +258,9 @@ CREATE TABLE reserva (
     numninnos integer,
     idfactura integer NOT NULL,
     idusuario integer NOT NULL,
-    idestado character varying(5) NOT NULL
+    idestado integer NOT NULL,
+    codtransporte character varying(7),
+    idhotel integer NOT NULL
 );
 
 
@@ -256,6 +300,32 @@ CREATE TABLE reservaxentrada (
 
 
 ALTER TABLE reservaxentrada OWNER TO fernando;
+
+--
+-- Name: reservaxhabitacion; Type: TABLE; Schema: public; Owner: fernando
+--
+
+CREATE TABLE reservaxhabitacion (
+    codreserva integer NOT NULL,
+    codhabitacion integer NOT NULL,
+    canttipo integer DEFAULT 1
+);
+
+
+ALTER TABLE reservaxhabitacion OWNER TO fernando;
+
+--
+-- Name: reservaxplan; Type: TABLE; Schema: public; Owner: fernando
+--
+
+CREATE TABLE reservaxplan (
+    codreserva integer NOT NULL,
+    codplan integer NOT NULL,
+    cantidad integer DEFAULT 1
+);
+
+
+ALTER TABLE reservaxplan OWNER TO fernando;
 
 --
 -- Name: transporte; Type: TABLE; Schema: public; Owner: fernando
@@ -319,6 +389,13 @@ ALTER TABLE ONLY entrada ALTER COLUMN codentrada SET DEFAULT nextval('entrada_co
 
 
 --
+-- Name: idestado; Type: DEFAULT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY estado ALTER COLUMN idestado SET DEFAULT nextval('estado_idestado_seq'::regclass);
+
+
+--
 -- Name: codhabitacion; Type: DEFAULT; Schema: public; Owner: fernando
 --
 
@@ -330,6 +407,13 @@ ALTER TABLE ONLY habitacion ALTER COLUMN codhabitacion SET DEFAULT nextval('habi
 --
 
 ALTER TABLE ONLY hotel ALTER COLUMN idhotel SET DEFAULT nextval('hotel_idhotel_seq'::regclass);
+
+
+--
+-- Name: codplan; Type: DEFAULT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY plancomida ALTER COLUMN codplan SET DEFAULT nextval('plancomida_codplan_seq'::regclass);
 
 
 --
@@ -374,7 +458,64 @@ SELECT pg_catalog.setval('entrada_codentrada_seq', 1, false);
 --
 
 COPY estado (idestado, nomestado) FROM stdin;
+1	Florida
+2	Washington
+3	California
+4	Maryland
+5	Kansas
+6	New York
+7	New Mexico
+8	California
+9	Arizona
+10	California
+11	West Virginia
+12	Florida
+13	Virginia
+14	Nevada
+15	North Carolina
+16	New York
+17	Wisconsin
+18	Missouri
+19	New Jersey
+20	North Carolina
+21	Illinois
+22	Texas
+23	Texas
+24	North Carolina
+25	Florida
+26	Texas
+27	Louisiana
+28	Texas
+29	Arizona
+30	Ohio
+31	New York
+32	Texas
+33	Kansas
+34	Oklahoma
+35	Colorado
+36	Tennessee
+37	Oklahoma
+38	California
+39	New York
+40	Texas
+41	North Carolina
+42	Florida
+43	California
+44	Georgia
+45	Florida
+46	Michigan
+47	New York
+48	Texas
+49	Missouri
+50	Texas
 \.
+
+
+--
+-- Name: estado_idestado_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
+--
+
+SELECT pg_catalog.setval('estado_idestado_seq', 50, true);
 
 
 --
@@ -427,10 +568,17 @@ COPY plancomida (codplan, nomplan, descrplan, idhotel) FROM stdin;
 
 
 --
+-- Name: plancomida_codplan_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
+--
+
+SELECT pg_catalog.setval('plancomida_codplan_seq', 1, false);
+
+
+--
 -- Data for Name: reserva; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY reserva (codreserva, fechainicior, fechafinr, numadultos, numninnos, idfactura, idusuario, idestado) FROM stdin;
+COPY reserva (codreserva, fechainicior, fechafinr, numadultos, numninnos, idfactura, idusuario, idestado, codtransporte, idhotel) FROM stdin;
 \.
 
 
@@ -450,6 +598,22 @@ COPY reservaxentrada (codreserva, codentrada, cantidad, fecha) FROM stdin;
 
 
 --
+-- Data for Name: reservaxhabitacion; Type: TABLE DATA; Schema: public; Owner: fernando
+--
+
+COPY reservaxhabitacion (codreserva, codhabitacion, canttipo) FROM stdin;
+\.
+
+
+--
+-- Data for Name: reservaxplan; Type: TABLE DATA; Schema: public; Owner: fernando
+--
+
+COPY reservaxplan (codreserva, codplan, cantidad) FROM stdin;
+\.
+
+
+--
 -- Data for Name: transporte; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
@@ -462,10 +626,7 @@ COPY transporte (codtransporte, modelotransporte, numpasajeros, capalmacenaje, e
 --
 
 COPY usuario (idusuario, nomusuario, apeusuario, emailusuario, passusuario, cnxusuario, rol) FROM stdin;
-11	juan	vasquez	juan@tumbinbin.com	b58d1cbbf4b0789e57e9fa9b1a06b5ae	f	1
-12	Juan	Domingo	britoserious@gmail.com	b58d1cbbf4b0789e57e9fa9b1a06b5ae	f	1
-10	Regina	Viscarra	viscarra.regina@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
-9	Fernando	Vasquez	fmorataya.04@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
+2	Fernando	Vasquez	fmorataya.04@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
 1	root	admin	root@admin.com	63a9f0ea7bb98050796b649e85481845	f	0
 \.
 
@@ -474,7 +635,7 @@ COPY usuario (idusuario, nomusuario, apeusuario, emailusuario, passusuario, cnxu
 -- Name: usuario_idusuario_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('usuario_idusuario_seq', 12, true);
+SELECT pg_catalog.setval('usuario_idusuario_seq', 2, true);
 
 
 --
@@ -550,6 +711,22 @@ ALTER TABLE ONLY reservaxentrada
 
 
 --
+-- Name: reservaxhabitacion_pkey; Type: CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY reservaxhabitacion
+    ADD CONSTRAINT reservaxhabitacion_pkey PRIMARY KEY (codreserva, codhabitacion);
+
+
+--
+-- Name: reservaxplan_pkey; Type: CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY reservaxplan
+    ADD CONSTRAINT reservaxplan_pkey PRIMARY KEY (codreserva, codplan);
+
+
+--
 -- Name: transporte_pkey; Type: CONSTRAINT; Schema: public; Owner: fernando
 --
 
@@ -622,11 +799,27 @@ ALTER TABLE ONLY plancomida
 
 
 --
+-- Name: reserva_codtransporte_fkey; Type: FK CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY reserva
+    ADD CONSTRAINT reserva_codtransporte_fkey FOREIGN KEY (codtransporte) REFERENCES transporte(codtransporte) ON DELETE CASCADE;
+
+
+--
 -- Name: reserva_idestado_fkey; Type: FK CONSTRAINT; Schema: public; Owner: fernando
 --
 
 ALTER TABLE ONLY reserva
     ADD CONSTRAINT reserva_idestado_fkey FOREIGN KEY (idestado) REFERENCES estado(idestado) ON DELETE CASCADE;
+
+
+--
+-- Name: reserva_idhotel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY reserva
+    ADD CONSTRAINT reserva_idhotel_fkey FOREIGN KEY (idhotel) REFERENCES hotel(idhotel) ON DELETE CASCADE;
 
 
 --
@@ -651,6 +844,38 @@ ALTER TABLE ONLY reservaxentrada
 
 ALTER TABLE ONLY reservaxentrada
     ADD CONSTRAINT reservaxentrada_codreserva_fkey FOREIGN KEY (codreserva) REFERENCES reserva(codreserva) ON DELETE CASCADE;
+
+
+--
+-- Name: reservaxhabitacion_codhabitacion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY reservaxhabitacion
+    ADD CONSTRAINT reservaxhabitacion_codhabitacion_fkey FOREIGN KEY (codhabitacion) REFERENCES habitacion(codhabitacion) ON DELETE CASCADE;
+
+
+--
+-- Name: reservaxhabitacion_codreserva_fkey; Type: FK CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY reservaxhabitacion
+    ADD CONSTRAINT reservaxhabitacion_codreserva_fkey FOREIGN KEY (codreserva) REFERENCES reserva(codreserva) ON DELETE CASCADE;
+
+
+--
+-- Name: reservaxplan_codplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY reservaxplan
+    ADD CONSTRAINT reservaxplan_codplan_fkey FOREIGN KEY (codplan) REFERENCES plancomida(codplan) ON DELETE CASCADE;
+
+
+--
+-- Name: reservaxplan_codreserva_fkey; Type: FK CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY reservaxplan
+    ADD CONSTRAINT reservaxplan_codreserva_fkey FOREIGN KEY (codreserva) REFERENCES reserva(codreserva) ON DELETE CASCADE;
 
 
 --

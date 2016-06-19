@@ -3,6 +3,7 @@ package gui;
 import java.io.File;
 import java.io.IOException;
 
+import data.User;
 import dblib.*;
 import gui.proc.Loader;
 import javafx.event.ActionEvent;
@@ -70,16 +71,27 @@ public class LoginGrid extends GridPane {
 				if( validate_login() ){
 					boolean exists = SQLInteractor.searchUser( txt_email.getText(), txt_password.getText() );
 					if( exists ){
-						lbl_error.setText( "Usuario encontrado, login correcto" );
 						SQLInteractor.setActive( txt_email.getText(), txt_password.getText() );
-						if( button_translate.getText().equals( "Español" ) ) {
-							mainStage.setTitle( "Search" );
-							mainStage.setScene( new SearchGrid( width, height, mainStage, true ).getMainScene() );
+						User activeUser = new User();
+						activeUser = SQLInteractor.getActive();
+						lbl_error.setText( "Login!" );
+						if( activeUser.getRole() == 0 ){
+							if( button_translate.getText().equals( "Español" ) ) {
+								mainStage.setTitle( "ADMIN" );
+								mainStage.setScene( new AdminGrid( width, height, mainStage, true ).getMainScene() );
+							}else{
+								mainStage.setTitle( "ADMINISTRADOR" );
+								mainStage.setScene( new AdminGrid( width, height, mainStage, false ).getMainScene() );
+							}
 						}else{
-							mainStage.setTitle( "Busqueda" );
-							mainStage.setScene( new SearchGrid( width, height, mainStage, false ).getMainScene() );
+							if( button_translate.getText().equals( "Español" ) ) {
+								mainStage.setTitle( "Search" );
+								mainStage.setScene( new SearchGrid( width, height, mainStage, true ).getMainScene() );
+							}else{
+								mainStage.setTitle( "Busqueda" );
+								mainStage.setScene( new SearchGrid( width, height, mainStage, false ).getMainScene() );
+							}
 						}
-						//abrir ventana nueva aqui
 					}
 				}else{
 					System.out.println( "Invalid data" );
@@ -120,10 +132,10 @@ public class LoginGrid extends GridPane {
 		super.add( this.lbl_error, 0, 0, 2, 1 );
 		//this Centers the error
 		super.setHalignment( this.lbl_error, HPos.CENTER );
-		super.setMargin( this.lbl_error, new Insets( 100, 0, 0, 0 ) );
+		super.setMargin( this.lbl_error, new Insets( 100, 0, 0, 140 ) );
 		super.add( this.form, 0, 1, 2, 1 );
 		//top, right, bottom, left
-		super.setMargin( this.form, new Insets( 60, 230, 0, 200 ));
+		super.setMargin( this.form, new Insets( 60, 230, 0, 270 ));
 		super.getColumnConstraints().add( new ColumnConstraints(350) );
 		super.getColumnConstraints().add( new ColumnConstraints(350) );
 		mainStage.setScene( this.mainScene );

@@ -1,5 +1,5 @@
 .root {
-	-fx-background-image: url( "./img/pattclear.jpg" );
+	-fx-background-image: url( "./img/backback.jpg" );
 	-fx-font-smoothing-type: lcd;
 }
 
@@ -11,7 +11,7 @@
 	-fx-font-weight: bolder;
 }
 
-.grid {
+.frame {
 	-fx-background-image: url( "./img/pattclear.jpg" );
 	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
 	-fx-background-radius: 5.0;

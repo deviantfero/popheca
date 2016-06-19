@@ -109,8 +109,8 @@ public class RegisterGrid extends GridPane {
 
 		super.add( this.lbl_error, 0, 0, 2, 1 );
 		super.add( this.form, 0, 1, 2, 1 );
-		super.setMargin( this.lbl_error, new Insets( 100, 0, 0, 10 ) );
-		super.setMargin( this.form, new Insets( 45, 500, 0, 180 ) );
+		super.setMargin( this.lbl_error, new Insets( 100, 0, 0, 5 ) );
+		super.setMargin( this.form, new Insets( 45, 500, 0, 250 ) );
 		super.setHalignment( this.lbl_error, HPos.CENTER );
 
 		mainStage.setScene( mainScene );

@@ -11,9 +11,9 @@ public class Loader {
 		 *so it's necessary to have them on both dirs
 		 *make changes on src dir */
 		if( f2.exists() )
-			applyScene.getStylesheets().add( "file://" + f.getAbsolutePath() );
+			applyScene.getStylesheets().add( "file:///" + f.getAbsolutePath() );
 		else if( f.exists() )
-			applyScene.getStylesheets().add( "file://" + f.getAbsolutePath() );
+			applyScene.getStylesheets().add( "file:///" + f.getAbsolutePath() );
 		else
 			applyScene.getStylesheets().add("/gui/styles/" + filename );
 	}
