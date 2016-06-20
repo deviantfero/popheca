@@ -1,5 +1,5 @@
 .root {
-	-fx-background-image: url( "./img/irongrip.png" );
+	-fx-background-image: url( "./img/BACK.jpg" );
 	-fx-font-smoothing-type: lcd;
 }
 
@@ -12,8 +12,8 @@
 }
 
 .top {
-	-fx-background-image: url( "./img/pattclear.jpg" );
-	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);
+	/*-fx-background-image: url( "./img/pattclear.jpg" );
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);/**/
 	-fx-background-radius: 5.0;
 	-fx-padding: 10px;
 }
@@ -25,12 +25,63 @@
 }
 
 .search_terms {
-	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);
+/*	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);/**/
 	-fx-background-radius: 5.0;
 	-fx-background-color: #DEDEDE;
 	-fx-padding: 10px;
 }
 
-.search_termstxt {
+#search_termstxt {
 	-fx-font-weight: bolder;
+	-fx-font-size: 14px;
 }
+
+#hotel_result {
+	-fx-background-color: #FFFFFF;
+	/*-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);/**/
+	-fx-background-radius: 5.0;
+	-fx-padding: 20px;
+	-fx-font-weight: bolder;
+	-fx-font-size: 14px;
+}
+
+#hotel_result .button {
+	-fx-font-weight: normal;
+	-fx-font-size: 13px;
+}
+
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+	-fx-background-color: rgba( 42, 59, 76, 0.6 );
+	-fx-background-radius: 5.0;
+}
+/* The increment and decrement button CSS class of scrollbar */
+.myscrollpane .increment-button ,.myscrollpane .decrement-button {
+    -fx-background-color:transparent;
+	-fx-background-radius: 2;
+	-fx-fill: transparent;
+
+}
+
+/* The main scrollbar **track** CSS class  */
+.myscrollpane .scroll-bar:horizontal .track,
+.myscrollpane .scroll-bar:vertical .track{
+	-fx-background-color: transparent;
+	-fx-border-color:derive(gray,80%);
+
+	-fx-background-radius: 2em;
+	-fx-border-radius:2em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+.myscrollpane .scroll-bar:horizontal .thumb,
+.myscrollpane .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(rgb( 42, 59, 76 ),90%);
+	-fx-background-insets: 2, 0, 0;
+	-fx-background-radius: 2em;
+
+}
+

@@ -42,8 +42,8 @@ alter table ReservaXEntrada add foreign key (codReserva) references Reserva on d
 alter table ReservaXEntrada add foreign key (codEntrada) references Entrada on delete cascade;
 
 create table Estado(
-	idEstado serial unique primary key,
-	nomEstado varchar(20)
+	idEstado serial primary key,
+	nomEstado varchar(20) unique
 );
 
 alter table Reserva add foreign key (idEstado) references Estado on delete cascade;

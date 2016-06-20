@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import gui.HotelGrid;
 
 import data.User;
 
@@ -155,6 +157,7 @@ public class SQLInteractor {
 			c.close();
 		}catch( Exception e ) {
 			System.err.println( "SQL::There was some error" );
+			return null;
 		}
 		if( activeUser != null ){
 			System.out.println( "SQL::User found" );
@@ -163,5 +166,33 @@ public class SQLInteractor {
 			System.err.println( "SQL::User not found" );
 			return null;
 		}
+	}
+
+	public static ArrayList<HotelGrid> searchHotel( String state, boolean translate ){
+		ArrayList<HotelGrid> resultList = new ArrayList<HotelGrid>();
+		PreparedStatement search = null;
+		String searchString = "select * from estado E, hotel H where E.nomestado=? and E.idestado = H.idestado";
+		try{
+			Connection c = SQLInteractor.connect();
+			c.setAutoCommit( false );
+			search = c.prepareStatement( searchString );
+			search.setString( 1, state );
+			ResultSet rs = search.executeQuery();
+			while( rs.next() ) {
+				HotelGrid result = new HotelGrid( translate );
+				result.setTxt_state( state );
+				result.setTxt_hname( rs.getString( "nomhotel" ) );
+				if( translate )
+					result.setTxt_descr( rs.getString( "engdescrhotel" ) );
+				else
+					result.setTxt_descr( rs.getString( "descrhotel" ) );
+				resultList.add( result );
+			}
+		}catch( Exception e ) {
+			System.err.println( "SQL::Some error ocurred while searching for hotels" );
+			System.err.println( e.getMessage() );
+			return null;
+		}
+		return resultList;
 	}
 }

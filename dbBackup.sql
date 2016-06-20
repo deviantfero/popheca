@@ -184,7 +184,8 @@ CREATE TABLE hotel (
     nomhotel character varying(50) NOT NULL,
     lvlhotel integer DEFAULT 0 NOT NULL,
     descrhotel character varying(300) DEFAULT 'n/a'::character varying NOT NULL,
-    idestado integer NOT NULL
+    idestado integer NOT NULL,
+    engdescrhotel character varying(300)
 );
 
 
@@ -548,7 +549,12 @@ SELECT pg_catalog.setval('habitacion_codhabitacion_seq', 1, false);
 -- Data for Name: hotel; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY hotel (idhotel, nomhotel, lvlhotel, descrhotel, idestado) FROM stdin;
+COPY hotel (idhotel, nomhotel, lvlhotel, descrhotel, idestado, engdescrhotel) FROM stdin;
+1	Library Hotel	4	Ubicado en el noreste de Estados Unidos con aproximadamente 8,4 millones de habitantes, dentro de este estado se encuentran algunos de los monumentos y edificios mas reconocidos al rededor del mundo, bordeado por el rio Hudson que forma un puerto natural y que desemboca en el oceano Atlantico.	1	n/a
+2	Liberty Hotel	3	Ubicado en el noreste de Estados Unidos con aproximadamente 8,4 millones de habitantes, dentro de este estado se encuentran algunos de los monumentos y edificios mas reconocidos al rededor del mundo, bordeado por el rio Hudson que forma un puerto natural y que desemboca en el oceano Atlantico.	1	n/a
+3	Pokemon Hotel	3	Ubicado en el noreste de Estados Unidos con aproximadamente.	1	n/a
+4	Digimon Hotel	5	Ubicado en el noreste de Eos Unidos con aproximadamente.	1	n/a
+5	Transilvania Hotel	5	Ubicado en el noreste de Eos Unidos con aproximadamente.	1	n/a
 \.
 
 
@@ -556,7 +562,7 @@ COPY hotel (idhotel, nomhotel, lvlhotel, descrhotel, idestado) FROM stdin;
 -- Name: hotel_idhotel_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('hotel_idhotel_seq', 1, false);
+SELECT pg_catalog.setval('hotel_idhotel_seq', 5, true);
 
 
 --
@@ -626,8 +632,8 @@ COPY transporte (codtransporte, modelotransporte, numpasajeros, capalmacenaje, e
 --
 
 COPY usuario (idusuario, nomusuario, apeusuario, emailusuario, passusuario, cnxusuario, rol) FROM stdin;
-2	Fernando	Vasquez	fmorataya.04@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
 1	root	admin	root@admin.com	63a9f0ea7bb98050796b649e85481845	f	0
+2	Fernando	Vasquez	fmorataya.04@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
 \.
 
 
