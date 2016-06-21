@@ -67,4 +67,24 @@ public class HotelGrid extends GridPane {
 		this.txt_engdescr.setText( txt_engdescr );
 	}
 
+	public String getTxt_hname() {
+		return txt_hname.getText();
+	}
+
+	public String getTxt_state() {
+		return txt_state.getText();
+	}
+
+	public String getTxt_descr() {
+		return txt_descr.getText();
+	}
+
+	public String getTxt_engdescr() {
+		return txt_engdescr.getText();
+	}
+
+	public Button getButton_select() {
+		return button_select;
+	}
+
 }

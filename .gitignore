@@ -9,7 +9,6 @@
 *.xmi
 
 # Package Files #
-*.jar
 *.war
 *.ear
 

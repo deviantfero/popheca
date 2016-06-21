@@ -128,6 +128,14 @@ public class SearchGrid extends GridPane {
 				searchTerms.setVisible( true );
 				resultGrids = SQLInteractor.searchHotel( txt_state.getText(), translate );
 				for( HotelGrid hotel : resultGrids ) {
+					hotel.getButton_select().setOnAction( new EventHandler<ActionEvent>() {
+						@Override
+						public void handle( ActionEvent e ) {
+							System.out.println( hotel.getTxt_hname() );
+							results.getChildren().clear();
+							//smooth sailing cowboy
+						}
+					});
 					results.add( hotel, 0, i );
 					i++;
 				}
