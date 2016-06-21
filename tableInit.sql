@@ -25,9 +25,11 @@ alter table Reserva add foreign key (idUsuario) references Usuario on delete cas
 
 create table Entrada(
 	codEntrada serial primary key,
+	nombreEntrada varchar (30) not null,
 	tipoEntrada varchar (50) not null,
 	precioEntrada float not null,
-	idEstado int not null
+	idEstado int not null,
+	IMGEntrada varchar (50)
 );
 
 create table ReservaXEntrada(
@@ -56,7 +58,8 @@ create table Hotel(
 	descrHotel varchar(300) not null default 'n/a',
 	descrHotelEng varchar(300) not null default 'n/a',
 	direcHotel varchar(100) not null default 'n/a',
-	idEstado int not null
+	idEstado int not null,
+	IMGHotel varchar (50)
 );
 
 alter table Hotel add foreign key (idEstado) references Estado on delete cascade;
@@ -68,7 +71,8 @@ create table Habitacion (
 	prcHabitacion float not null,
 	detHabitacion varchar(250) not null default 'n/a',
 	EstadoReserva int not null,
-	idHotel int not null
+	idHotel int not null,
+	IMGHabitacion varchar (50)
 );
 
 alter table Habitacion add foreign key (idHotel) references Hotel on delete cascade;
@@ -77,7 +81,8 @@ create table PlanComida(
 	codPlan serial primary key,
 	nomPlan varchar(20) not null,
 	descrPlan varchar(150) not null default 'n/a',
-	idHotel int not null
+	idHotel int not null,
+	IMGPlan varchar (50)
 );
 alter table PlanComida add foreign key (idHotel) references Hotel on delete cascade;
 
@@ -87,7 +92,8 @@ create table Transporte(
 	numPasajeros int not null default 1,
 	capAlmacenaje float not null,
 	EstadoReserva int not null,
-	idHotel int not null
+	idHotel int not null,
+	IMGTransporte varchar(50)
 );
 
 alter table Transporte add foreign key (idHotel) references Hotel on delete cascade;
@@ -147,4 +153,4 @@ Alter table ReservaXPlan add foreign key (codPlan) references PlanComida on dele
 --drop table Estado;
 --drop table Hotel;
 
-insert into Usuario ( nomUsuario, apeUsuario, emailUsuario, passUsuario, cnxUsuario, rol ) values( 'root', 'admin', 'root@admin.com','63a9f0ea7bb98050796b649e85481845',false, 0 );
+insert into Usuario (nomUsuario, apeUsuario, emailUsuario, passUsuario, cnxUsuario, rol ) values('root', 'admin', 'root@admin.com','63a9f0ea7bb98050796b649e85481845',false, 0 );
