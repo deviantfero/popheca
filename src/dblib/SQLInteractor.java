@@ -183,7 +183,7 @@ public class SQLInteractor {
 				result.setTxt_state( state );
 				result.setTxt_hname( rs.getString( "nomhotel" ) );
 				if( translate )
-					result.setTxt_descr( rs.getString( "engdescrhotel" ) );
+					result.setTxt_descr( rs.getString( "descrhoteleng" ) );
 				else
 					result.setTxt_descr( rs.getString( "descrhotel" ) );
 				resultList.add( result );
