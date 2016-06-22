@@ -171,21 +171,44 @@ public class SQLInteractor {
 	public static ArrayList<HotelGrid> searchHotel( String state, boolean translate ){
 		ArrayList<HotelGrid> resultList = new ArrayList<HotelGrid>();
 		PreparedStatement search = null;
-		String searchString = "select * from estado E, hotel H where E.nomestado=? and E.idestado = H.idestado";
+		String searchString = null;
+		if( state.equals( "Any" ) )
+			searchString = "select * from hotel";
+		else
+			searchString = "select * from estado E, hotel H where lower(E.nomestado)=? and E.idestado = H.idestado";
 		try{
 			Connection c = SQLInteractor.connect();
 			c.setAutoCommit( false );
 			search = c.prepareStatement( searchString );
-			search.setString( 1, state );
+			if( !state.equals( "Any" ) )
+				search.setString( 1, state.toLowerCase() );
 			ResultSet rs = search.executeQuery();
 			while( rs.next() ) {
 				HotelGrid result = new HotelGrid( translate );
+				String path = new String( "/gui/styles/img/" +
+							state.toLowerCase() + "/" +
+							rs.getString( "nomhotel" ) + "/2.jpg" );
+				String pathr = new String( "/gui/styles/img/" + rs.getInt( "lvlhotel" ) + ".png");
 				result.setTxt_state( state );
 				result.setTxt_hname( rs.getString( "nomhotel" ) );
+				result.setTxt_direction( rs.getString( "direchotel" ) );
 				if( translate )
 					result.setTxt_descr( rs.getString( "descrhoteleng" ) );
 				else
 					result.setTxt_descr( rs.getString( "descrhotel" ) );
+
+				try{
+					result.setImageHotel( path.replaceAll( " ", "\\ " ) );
+				}catch( Exception e ){
+					System.err.println( "FX::Could not load image in: " + path );
+					result.setImageHotel( "/gui/styles/img/backback.jpg" );
+				}
+				try{
+					result.setImageRating( pathr );
+				}catch( Exception e ){
+					System.err.println( "FX::Could not load image in: " + pathr );
+				}
+
 				resultList.add( result );
 			}
 		}catch( Exception e ) {
@@ -195,4 +218,5 @@ public class SQLInteractor {
 		}
 		return resultList;
 	}
+
 }

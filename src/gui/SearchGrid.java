@@ -13,8 +13,6 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.ColumnConstraints;
@@ -22,11 +20,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 
@@ -36,12 +31,12 @@ public class SearchGrid extends GridPane {
 
 	private Text lbl_activeUser;
 	private TextField txt_state;
-	private TextField txt_amount;
 	private DatePicker date_in;
 	private DatePicker date_out;
 	private Button button_search;
-	private ComboBox<String> combo_amount;
-	private ComboBox<String> combo_amountkid;
+	private TextField txt_amount;
+	private TextField txt_amountkid;
+	private Text lbl_error;
 	private User activeUser;
 
 	private GridPane searchTerms;
@@ -88,6 +83,8 @@ public class SearchGrid extends GridPane {
 		this.init_searchterms();
 
 		this.translate = translate;
+		this.lbl_error = new Text();
+		this.lbl_error.getStyleClass().add( "lbl_error" );
 		this.lbl_activeUser = new Text( "" );
 		this.lbl_activeUser.getStyleClass().add( "welcome_message" );
 		this.lbl_activeUser.setTextAlignment( TextAlignment.CENTER );
@@ -98,9 +95,6 @@ public class SearchGrid extends GridPane {
 		this.txt_state.setPromptText( "Estado" );
 		this.txt_state.setMinWidth( 380 );
 		
-		this.txt_amount = new TextField();
-		this.txt_amount.setMaxWidth( 100 );
-
 		this.date_in = new DatePicker();
 		this.date_in.setPromptText( "Ingreso - mm/dd/aaaa" );
 		this.date_in.minWidth( 180 );
@@ -108,14 +102,12 @@ public class SearchGrid extends GridPane {
 		this.date_out.setPromptText( "Salida - mm/dd/aaaa" );
 		this.date_out.minWidth( 180 );
 
-		ObservableList<String> options = FXCollections.observableArrayList( "1", "2", "3", "4", "5+" );
-		ObservableList<String> optionskids = FXCollections.observableArrayList( "0", "1", "2", "3", "4", "5+" );
-		this.combo_amount = new ComboBox<String>( options );
-		this.combo_amount.setMinWidth( 188 );
-		this.combo_amount.setPromptText( "Personas" );
-		this.combo_amountkid = new ComboBox<String>( optionskids );
-		this.combo_amountkid.setPromptText( "Niños" );
-		this.combo_amountkid.setMinWidth( 180 );
+		this.txt_amount = new TextField();
+		this.txt_amount.setMinWidth( 188 );
+		this.txt_amount.setPromptText( "Personas" );
+		this.txt_amountkid = new TextField();
+		this.txt_amountkid.setPromptText( "Niños" );
+		this.txt_amountkid.setMinWidth( 180 );
 
 		this.button_search = new Button( "Buscar" );
 		this.button_search.setMinWidth( 104 );
@@ -124,22 +116,28 @@ public class SearchGrid extends GridPane {
 			public void handle( ActionEvent e ){
 				int i = 0;
 				change_searchterms();
-				top.setVisible( false );
-				searchTerms.setVisible( true );
-				resultGrids = SQLInteractor.searchHotel( txt_state.getText(), translate );
-				for( HotelGrid hotel : resultGrids ) {
-					hotel.getButton_select().setOnAction( new EventHandler<ActionEvent>() {
-						@Override
-						public void handle( ActionEvent e ) {
-							System.out.println( hotel.getTxt_hname() );
-							results.getChildren().clear();
-							//smooth sailing cowboy
-						}
-					});
-					results.add( hotel, 0, i );
-					i++;
+				if( validate_dates() && validate_amounts() ){
+					resultGrids = SQLInteractor.searchHotel( txt_state.getText(), translate );
+					for( HotelGrid hotel : resultGrids ) {
+						hotel.getButton_select().setOnAction( new EventHandler<ActionEvent>() {
+							@Override
+							public void handle( ActionEvent e ) {
+								System.out.println( hotel.getTxt_hname() );
+								results.getChildren().clear();
+								//smooth sailing cowboy
+							}
+						});
+						results.add( hotel, 0, i );
+						i++;
+					}
+					lbl_error.setVisible( false );
+					top.setVisible( false );
+					searchTerms.setVisible( true );
+					resultscontainer.setVisible( true );
+				}else{
+					lbl_error.setVisible( true );
+					System.err.println( "wrong date range" );
 				}
-				resultscontainer.setVisible( true );
 			}
 		});
 
@@ -147,8 +145,8 @@ public class SearchGrid extends GridPane {
 		this.top.add( this.txt_state, 0, 1, 4, 1 );
 		this.top.add( this.date_in, 0, 2, 2, 1 );
 		this.top.add( this.date_out, 2, 2, 2, 1 );
-		this.top.add( this.combo_amount, 0, 3, 2, 1 );
-		this.top.add( this.combo_amountkid, 2, 3, 2, 1 );
+		this.top.add( this.txt_amount, 0, 3, 2, 1 );
+		this.top.add( this.txt_amountkid, 2, 3, 2, 1 );
 		this.top.add( this.button_search, 0, 4, 4, 1 );
 		super.setHalignment( this.button_search, HPos.CENTER );
 		super.setHalignment( this.lbl_activeUser, HPos.CENTER );
@@ -158,11 +156,12 @@ public class SearchGrid extends GridPane {
 		super.setMargin( this.lbl_activeUser, new Insets( 0, 0, 0, 210 ) );
 		super.setMargin( this.txt_state, new Insets( 0, 0, 0, 210 ) );
 		super.setMargin( this.date_in, new Insets( 0, 0, 0, 210 ) );
-		super.setMargin( this.combo_amount, new Insets( 0, 0, 0, 210 ) );
+		super.setMargin( this.txt_amount, new Insets( 0, 0, 0, 210 ) );
 		super.setMargin( this.button_search, new Insets( 0, 0, 0, 210 ) );
 		super.add( this.top, 0, 0 );
 		super.add( this.searchTerms, 0, 1 );
 		super.add( this.resultscontainer, 0, 2 );
+		super.add( this.lbl_error, 0, 2 );
 		super.setMargin( this.resultscontainer, new Insets( -90, 420, 20, 100 ) );
 		super.setMargin( this.top, new Insets( 120, 0, 0, 0 ) );
 		super.setHalignment( this.searchTerms, HPos.CENTER );
@@ -181,8 +180,8 @@ public class SearchGrid extends GridPane {
 		this.lbl_activeUser.setText( "Welcome, " + activeUser.getName() + " " + activeUser.getLastname() );
 		this.button_search.setText( "Search" );
 		this.txt_state.setPromptText( "State" );
-		this.combo_amount.setPromptText( "People" );
-		this.combo_amountkid.setPromptText( "Children" );
+		this.txt_amount.setPromptText( "People" );
+		this.txt_amountkid.setPromptText( "Children" );
 		this.date_in.setPromptText( "In - dd/mm/yyyy" );
 		this.date_out.setPromptText( "Out - dd/mm/yyyy" );
 	}
@@ -226,25 +225,78 @@ public class SearchGrid extends GridPane {
 			this.date_in.setValue( LocalDate.now().plusDays(7) );
 		if( this.date_out.getValue() == null )
 			this.date_out.setValue( this.date_in.getValue().plusDays(7) );
-		if( this.combo_amount.getValue() == null )
-			this.combo_amount.setValue( "1" );
-		if( this.combo_amountkid.getValue() == null )
-			this.combo_amountkid.setValue( "0" );
-		if( this.txt_state.getText() == null || this.txt_state.getText().length() > 15 )
+		if( this.txt_amount.getText().equals("") )
+			this.txt_amount.setText( "1" );
+		if( this.txt_amountkid.getText().equals("") )
+			this.txt_amountkid.setText( "0" );
+		if( this.txt_state.getText().equals("") || this.txt_state.getText().length() > 15 )
 			this.txt_state.setText( "Any" );
 
 		if( translate ){
 			this.lbl_indate.setText( "From: " + this.date_in.getValue() );
 			this.lbl_outdate.setText(  "To: " + this.date_out.getValue() );
-			this.lbl_people.setText( this.combo_amount.getValue() + " P" );
-			this.lbl_kids.setText( this.combo_amountkid.getValue() + " K" );
-			this.lbl_state.setText( this.txt_state.getText() );
+			this.lbl_people.setText( this.txt_amount.getText() + " P" );
+			this.lbl_kids.setText( this.txt_amountkid.getText() + " K" );
 		}else{
 			this.lbl_indate.setText( "Desde: " + this.date_in.getValue() );
 			this.lbl_outdate.setText(  "Hasta: " + this.date_out.getValue() );
-			this.lbl_people.setText( this.combo_amount.getValue() + " P" );
-			this.lbl_kids.setText( this.combo_amountkid.getValue() + " N" );
-			this.lbl_state.setText( this.txt_state.getText() );
+			this.lbl_people.setText( this.txt_amount.getText() + " P" );
+			this.lbl_kids.setText( this.txt_amountkid.getText() + " N" );
+		}
+		String stateNow = this.txt_state.getText();
+		stateNow = stateNow.substring( 0, 1 ).toUpperCase() + stateNow.substring( 1 ).toLowerCase();
+		this.lbl_state.setText( stateNow );
+	}
+
+	private boolean validate_dates() {
+		LocalDate date1 = this.date_in.getValue();
+		LocalDate date2 = this.date_out.getValue();
+		if( date1.compareTo(LocalDate.now().plusDays(7)) < 0 ) {
+			if( translate )
+				this.lbl_error.setText( "Reserve with a week of anticipation" );
+			else
+				this.lbl_error.setText( "Reserve una fecha con una semana de anticipacion" );
+			return false;
+		}
+		else if( date2.compareTo(date1) < 0  ) {
+			if( translate )
+				this.lbl_error.setText( "Out date is before In date" );
+			else
+				this.lbl_error.setText( "Fecha de salida es antes de fecha de entrada" );
+			return false;
+		}
+		else if( date2.compareTo(date1) == 0) {
+			if( translate )
+				this.lbl_error.setText( "Same In and Out date" );
+			else
+				this.lbl_error.setText( "Misma fecha de entrada y salida" );
+			return false;
+		}else if( date2.compareTo(date1.plusDays(31)) > 0 ) {
+			if( translate )
+				this.lbl_error.setText( "Reserve time exceeded" );
+			else
+				this.lbl_error.setText( "Tiempo de reserva excedido" );
+			return false;
+		}else
+			return true;
+	}
+
+	private boolean validate_amounts() {
+		if( this.txt_amount.getText().matches("[0-9]*") && 
+			this.txt_amountkid.getText().matches("[0-9]*") ) {
+
+			int adults = Integer.parseInt( this.txt_amount.getText() );
+			int children = Integer.parseInt( this.txt_amountkid.getText() );
+			if( adults + children > 10 ) {
+				if( translate )
+					this.txt_amount.setText( "10 people limit" );
+				else
+					this.txt_amount.setText( "cantidad maxima 10 personas" );
+				return false;
+			}else
+				return true;
+		}else{
+			return false;
 		}
 	}
 

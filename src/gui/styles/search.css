@@ -45,6 +45,11 @@
 	-fx-font-size: 14px;
 }
 
+#hotel_txt {
+	-fx-font-weight: normal;
+	-fx-font-size: 13px;
+}
+
 #hotel_result .button {
 	-fx-font-weight: normal;
 	-fx-font-size: 13px;
