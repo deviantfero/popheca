@@ -140,7 +140,6 @@ Alter table ReservaXPlan add primary key (codReserva, codPlan);
 ALter table ReservaXPlan add foreign key (codReserva) references Reserva on delete cascade;
 Alter table ReservaXPlan add foreign key (codPlan) references PlanComida on delete cascade;
 
-
 --drop table ReservaXPlan;
 --drop table ReservaXHabitacion;
 --drop table ReservaXEntrada;

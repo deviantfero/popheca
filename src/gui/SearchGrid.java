@@ -2,6 +2,7 @@ package gui;
 
 import dblib.SQLInteractor;
 import data.User;
+import data.Reserve;
 
 //import java.io.File;
 
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 public class SearchGrid extends GridPane {
 	private Scene mainScene;
 	private GridPane top;
+	private Reserve message;
 
 	private Text lbl_activeUser;
 	private TextField txt_state;
@@ -116,14 +118,26 @@ public class SearchGrid extends GridPane {
 			public void handle( ActionEvent e ){
 				int i = 0;
 				change_searchterms();
+				message = new Reserve( date_in, date_out );
+				message.setKids(Integer.parseInt( txt_amountkid.getText() ));
+				message.setAdults(Integer.parseInt( txt_amount.getText() ));
+				message.setIdState( SQLInteractor.getStateID( txt_state.getText() ) );
 				if( validate_dates() && validate_amounts() ){
 					resultGrids = SQLInteractor.searchHotel( txt_state.getText(), translate );
 					for( HotelGrid hotel : resultGrids ) {
 						hotel.getButton_select().setOnAction( new EventHandler<ActionEvent>() {
 							@Override
 							public void handle( ActionEvent e ) {
+								//testing room results
+								int j = 0;
 								System.out.println( hotel.getTxt_hname() );
 								results.getChildren().clear();
+								ArrayList<RoomGrid> RoomList = SQLInteractor.searchRoom( hotel.getTxt_hname(),
+																translate, txt_state.getText(), message );
+								for( RoomGrid room : RoomList ) {
+									results.add( room, 0, j );
+									j++;
+								}
 								//smooth sailing cowboy
 							}
 						});

@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import gui.HotelGrid;
+import gui.RoomGrid;
 
+import data.Reserve;
 import data.User;
 
 public class SQLInteractor {
@@ -153,6 +155,7 @@ public class SQLInteractor {
 				activeUser.setLastname( rs.getString( "apeusuario" ) );
 				activeUser.setEmail( rs.getString( "emailusuario" ) );
 				activeUser.setRole( rs.getInt( "rol" ) );
+				activeUser.setId( rs.getInt( "idusuario" ) );
 			}
 			c.close();
 		}catch( Exception e ) {
@@ -187,7 +190,7 @@ public class SQLInteractor {
 				HotelGrid result = new HotelGrid( translate );
 				String path = new String( "/gui/styles/img/" +
 							state.toLowerCase() + "/" +
-							rs.getString( "nomhotel" ) + "/2.jpg" );
+							rs.getString( "nomhotel" ) + "/0.jpg" );
 				String pathr = new String( "/gui/styles/img/" + rs.getInt( "lvlhotel" ) + ".png");
 				result.setTxt_state( state );
 				result.setTxt_hname( rs.getString( "nomhotel" ) );
@@ -211,6 +214,7 @@ public class SQLInteractor {
 
 				resultList.add( result );
 			}
+			c.close();
 		}catch( Exception e ) {
 			System.err.println( "SQL::Some error ocurred while searching for hotels" );
 			System.err.println( e.getMessage() );
@@ -219,4 +223,124 @@ public class SQLInteractor {
 		return resultList;
 	}
 
+	public static ArrayList<RoomGrid> searchRoom( String hotelName, boolean translate, String state, Reserve message ) {
+		ArrayList<RoomGrid> resultList = new ArrayList<RoomGrid>();
+		PreparedStatement search = null;
+		String searchString = null;
+		searchString = "select R.codHabitacion, H.nomhotel, H.idHotel, R.maxPerson, R.prchabitacion, " + 
+		"R.dethabitacion,R.estadoreserva from hotel as H, habitacion as R, estadoreserva as " + 
+		"S where H.idHotel=R.idHotel and R.estadoreserva = S.estadoreserva and H.nomhotel=?;";
+		try{
+			Connection c = SQLInteractor.connect();
+			c.setAutoCommit( false );
+			search = c.prepareStatement( searchString );
+			search.setString( 1, hotelName );
+			ResultSet rs = search.executeQuery();
+			while( rs.next() ) {
+				String image_path = new String( "/gui/styles/img/" + state.toLowerCase() 
+												+ "/" + rs.getString( "nomhotel" ) 
+												+ "/" + rs.getInt( "maxperson" ) + ".jpg");
+
+				RoomGrid result = new RoomGrid( translate, message );
+
+				result.setCodroom( rs.getInt( "codhabitacion" ) );
+				result.setCodhotel( rs.getInt( "idHotel" ) );
+				result.setTxt_capacity( rs.getInt( "maxperson" ) );
+				result.setTxt_state( rs.getInt( "estadoreserva" ) );
+				result.setTxt_price( rs.getDouble( "prchabitacion" ) );
+				try{
+					result.setImageRoom( image_path.replaceAll( " ", "\\ " ) );
+				}catch( Exception e ){
+					System.err.println( "FX::Could not load image in: " + image_path );
+					result.setImageRoom( "/gui/styles/img/backback.jpg" );
+				}
+				resultList.add( result );
+			}
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Some error ocurred while searching for hotels" );
+			System.err.println( e.getMessage() );
+			return null;
+		}
+		return resultList;
+	}
+
+	public static int getStateID( String statename ) {
+		PreparedStatement search = null;
+		String searchString = null;
+		int stateid = 0;
+		searchString = "select idestado from estado where nomestado=?"; 
+		try{
+			Connection c = SQLInteractor.connect();
+			c.setAutoCommit( false );
+			search = c.prepareStatement( searchString );
+			search.setString( 1, statename );
+			ResultSet rs = search.executeQuery();
+			rs.next();
+			stateid = rs.getInt( "idestado" );
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Some error ocurred while searching for state's ID" );
+			System.err.println( e.getMessage() );
+		}
+		return stateid;
+	}
+
+	public static int getLastReserveID() {
+		PreparedStatement search = null;
+		String searchString = null;
+		int reservaid = 0;
+		searchString = "select codreserva from reserva order by codreserva"; 
+		try{
+			Connection c = SQLInteractor.connect();
+			c.setAutoCommit( false );
+			search = c.prepareStatement( searchString );
+			ResultSet rs = search.executeQuery();
+			while( rs.next() )
+				reservaid = rs.getInt( "codreserva" );
+			System.out.println( "ID::" + reservaid );
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Some error ocurred while searching for reserve's ID" );
+			System.err.println( e.getMessage() );
+		}
+		return reservaid;
+	}
+
+	public static void makeReservation( Reserve message ) {
+		PreparedStatement search = null;
+		String searchString = null;
+		searchString = "SELECT makereserve( ?, ?, ?, ?, ?, ?, ?, ? )"; 
+		try{
+			Connection c = SQLInteractor.connect();
+			search = c.prepareStatement( searchString );
+			search.setDate(1, java.sql.Date.valueOf(message.getIn_date()) );
+			search.setDate(2, java.sql.Date.valueOf(message.getOut_date()) );
+			search.setInt( 3, message.getAdults() );
+			search.setInt( 4, message.getKids() );
+			search.setInt( 5, message.getAdults() + message.getKids() + message.getIdState() + message.getIdHotel() );
+			search.setInt( 6, message.getActiveUser().getId() );
+			search.setInt( 7, message.getIdState() );
+			search.setInt( 8, message.getIdHotel() );
+			search.executeQuery();
+			System.out.println( "SUCCESS" );
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( "SQL::some error ocurred while inserting1" );
+			System.err.println( e.getMessage() );
+		}
+		try{
+			Connection c = SQLInteractor.connect();
+			String newString = "insert into reservaxhabitacion (codreserva, codhabitacion, canttipo) values ( ?, ?, ? )";
+			search = c.prepareStatement( newString );
+			search.setInt( 1, SQLInteractor.getLastReserveID());
+			search.setInt( 2, message.getIdRoom() );
+			search.setInt( 3, 1 );
+			search.executeUpdate();
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( "SQL::some error ocurred while inserting2" );
+			System.err.println( e.getMessage() );
+		}
+	}
 }
