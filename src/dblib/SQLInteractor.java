@@ -228,7 +228,7 @@ public class SQLInteractor {
 		PreparedStatement search = null;
 		String searchString = null;
 		searchString = "select R.codHabitacion, H.nomhotel, H.idHotel, R.maxPerson, R.prchabitacion, " + 
-		"R.dethabitacion,R.estadoreserva from hotel as H, habitacion as R, estadoreserva as " + 
+		"R.dethabitacion,R.estadoreserva, R.dethabitacioneng from hotel as H, habitacion as R, estadoreserva as " + 
 		"S where H.idHotel=R.idHotel and R.estadoreserva = S.estadoreserva and H.nomhotel=?;";
 		try{
 			Connection c = SQLInteractor.connect();
@@ -248,6 +248,12 @@ public class SQLInteractor {
 				result.setTxt_capacity( rs.getInt( "maxperson" ) );
 				result.setTxt_state( rs.getInt( "estadoreserva" ) );
 				result.setTxt_price( rs.getDouble( "prchabitacion" ) );
+
+				if( translate )
+					result.setTxt_descr( rs.getString( "dethabitacion" ) );
+				else
+					result.setTxt_descr( rs.getString( "dethabitacioneng" ) );
+
 				try{
 					result.setImageRoom( image_path.replaceAll( " ", "\\ " ) );
 				}catch( Exception e ){

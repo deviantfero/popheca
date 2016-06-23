@@ -72,6 +72,8 @@ public class RoomGrid extends GridPane {
 		super.setMargin( this.container, new Insets( 10, 100, 10, 80 ) );
 		this.container.add( this.txt_capacity, 0, 0 );
 		super.setValignment( this.txt_capacity, VPos.TOP );
+		this.container.add( this.txt_descr, 0, 0 );
+		super.setValignment( this.txt_descr, VPos.TOP );
 		this.container.add( this.view_room, 1, 0, 1, 2 );
 		this.container.add( this.button_reserve, 1, 2 );
 		this.container.add( this.txt_price, 0, 3 );

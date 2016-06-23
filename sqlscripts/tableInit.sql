@@ -70,6 +70,7 @@ create table Habitacion (
 	maxPerson int not null default 1,
 	prcHabitacion float not null,
 	detHabitacion varchar(250) not null default 'n/a',
+	detHabitacioneng varchar(250) not null default 'n/a',
 	EstadoReserva int not null,
 	idHotel int not null,
 	IMGHabitacion varchar (50)
