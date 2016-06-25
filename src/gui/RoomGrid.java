@@ -2,15 +2,15 @@ package gui;
 
 import data.Reserve;
 
-import dblib.SQLInteractor;
+import dblib.*;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,6 +26,8 @@ public class RoomGrid extends GridPane {
 	private int codroom;
 	private int codhotel;
 	private boolean translate;
+	private LocalDate rin_date;
+	private LocalDate rout_date;
 
 	private Text txt_capacity;
 	private Text txt_state;
@@ -40,6 +42,8 @@ public class RoomGrid extends GridPane {
 		super();
 		this.container = new GridPane();
 		this.translate = translate;
+		this.rin_date = message.getIn_date();
+		this.rout_date = message.getOut_date();
 		ColumnConstraints column = new ColumnConstraints( 350 );
 		this.container.getColumnConstraints().add( column );
 		this.container.setHgap( 20 );
@@ -52,6 +56,7 @@ public class RoomGrid extends GridPane {
 		this.txt_price = new Text();
 		this.txt_descr = new Text();
 		this.txt_descr.setWrappingWidth( 290 );
+		this.txt_descr.setId( "hotel_txt" );
 		this.view_room = new ImageView();
 		if( translate )
 			this.button_reserve = new Button( "Reserve" );
@@ -64,7 +69,7 @@ public class RoomGrid extends GridPane {
 				message.setIdHotel( codhotel );
 				message.setIdRoom( codroom );
 				System.out.println( "Reserve" + codhotel );
-				SQLInteractor.makeReservation( message );
+				//SQLInteractor.makeReservation( message );
 			}
 		});
 
@@ -72,6 +77,8 @@ public class RoomGrid extends GridPane {
 		super.setMargin( this.container, new Insets( 10, 100, 10, 80 ) );
 		this.container.add( this.txt_capacity, 0, 0 );
 		super.setValignment( this.txt_capacity, VPos.TOP );
+		this.container.add( this.txt_descr, 0, 1, 1, 2 );
+		super.setValignment( this.txt_descr, VPos.TOP );
 		this.container.add( this.view_room, 1, 0, 1, 2 );
 		this.container.add( this.button_reserve, 1, 2 );
 		this.container.add( this.txt_price, 0, 3 );
@@ -104,27 +111,53 @@ public class RoomGrid extends GridPane {
 	}
 
 	public void setTxt_state( int state ) {
+		int index = 0;
 		this.state = state;
+		ArrayList<LocalDate> in_dates = new ArrayList<LocalDate>();
+		ArrayList<LocalDate> out_dates = new ArrayList<LocalDate>();
+
+		if( this.state == 1 ){
+			in_dates = SQLInteractor.getInDates( this.codroom );
+			out_dates = SQLInteractor.getOutDates( this.codroom );
+			if( in_dates.size() == 0 ){
+				SQLRoom.updateRoomState( this.codroom, 0 );
+				this.state = 0;
+			}
+			for( int i = 0; i < in_dates.size(); i++ ) {
+				if( this.rin_date.compareTo( in_dates.get(i) ) >= 0 
+					&& this.rin_date.compareTo( out_dates.get(i)) <= 0 ){
+					this.state = 2;
+					index = i;
+					break;
+				}
+				else if( this.rout_date.compareTo( in_dates.get(i) ) >= 0
+						 && this.rout_date.compareTo( out_dates.get(i)) <= 0 ){
+					this.state = 2;
+					index = i;
+					break;
+				}
+			}
+
+		}
+
 		switch( this.state ) {
-			case 0:
+			default:
 				if( translate )
 					this.txt_state.setText( "Free" ); 
 				else
 					this.txt_state.setText( "Libre" );
 				break;
-			case 1:
-				if( translate )
-					this.txt_state.setText( "Reserved" ); 
-				else
-					this.txt_state.setText( "Reservado" );
-				this.txt_state.setId( "room_states" );
-				break;
 			case 2:
-				if( translate )
+				if( translate ){
 					this.txt_state.setText( "Occupied" ); 
-				else
+					this.txt_descr.setText( "Occupied until: " + out_dates.get(index) );
+				}
+				else{
 					this.txt_state.setText( "Ocupado" );
+					this.txt_descr.setText( "Ocupado hasta: " + out_dates.get(index) );
+				}
 				this.txt_state.setId( "room_states" );
+				this.button_reserve.setDisable( true );
 				break;
 		}
 	}

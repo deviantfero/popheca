@@ -2,7 +2,7 @@ package data;
 
 import java.time.LocalDate;
 
-import dblib.SQLInteractor;
+import dblib.*;
 import javafx.scene.control.DatePicker;
 
 public class Reserve {
@@ -18,7 +18,7 @@ public class Reserve {
 	public Reserve( DatePicker in_date, DatePicker out_date ) {
 		this.in_date = in_date;
 		this.out_date = out_date;
-		this.activeUser = SQLInteractor.getActive();
+		this.activeUser = SQLUser.getActive();
 	}
 
 	public LocalDate getIn_date() {

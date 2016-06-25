@@ -30,6 +30,40 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
+-- Name: getroom_reserve(integer); Type: FUNCTION; Schema: public; Owner: fernando
+--
+
+CREATE FUNCTION getroom_reserve(numhabitacion integer) RETURNS refcursor
+    LANGUAGE plpgsql
+    AS $$
+declare
+	ref refcursor;
+begin
+	open ref for select X.codhabitacion, X.codreserva, R.fechainicior,
+	R.fechafinr from reservaxhabitacion as X, reserva as R
+	where X.codreserva=R.codreserva and X.codhabitacion=numhabitacion;
+	return ref;
+end;
+$$;
+
+
+ALTER FUNCTION public.getroom_reserve(numhabitacion integer) OWNER TO fernando;
+
+--
+-- Name: makereserve(date, date, integer, integer, integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: fernando
+--
+
+CREATE FUNCTION makereserve(fechaini date, fechafin date, numa integer, numn integer, idfac integer, idu integer, ide integer, idh integer) RETURNS void
+    LANGUAGE sql
+    AS $$
+	insert into reserva (fechainicior, fechafinr, numadultos, numninnos, idfactura, idusuario, idestado, idhotel)
+	values( fechaini, fechafin, numa, numn, idfac, idu, ide, idh );
+$$;
+
+
+ALTER FUNCTION public.makereserve(fechaini date, fechafin date, numa integer, numn integer, idfac integer, idu integer, ide integer, idh integer) OWNER TO fernando;
+
+--
 -- Name: register(character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: fernando
 --
 
@@ -65,8 +99,11 @@ ALTER TABLE adminxcliente OWNER TO fernando;
 
 CREATE TABLE entrada (
     codentrada integer NOT NULL,
+    nombreentrada character varying(30) NOT NULL,
     tipoentrada character varying(50) NOT NULL,
-    precioentrada double precision NOT NULL
+    precioentrada double precision NOT NULL,
+    idestado integer NOT NULL,
+    imgentrada character varying(50)
 );
 
 
@@ -148,7 +185,9 @@ CREATE TABLE habitacion (
     prchabitacion double precision NOT NULL,
     dethabitacion character varying(250) DEFAULT 'n/a'::character varying NOT NULL,
     estadoreserva integer NOT NULL,
-    idhotel integer NOT NULL
+    idhotel integer NOT NULL,
+    imghabitacion character varying(50),
+    dethabitacioneng character varying(250)
 );
 
 
@@ -184,8 +223,10 @@ CREATE TABLE hotel (
     nomhotel character varying(50) NOT NULL,
     lvlhotel integer DEFAULT 0 NOT NULL,
     descrhotel character varying(300) DEFAULT 'n/a'::character varying NOT NULL,
+    descrhoteleng character varying(300) DEFAULT 'n/a'::character varying NOT NULL,
+    direchotel character varying(100) DEFAULT 'n/a'::character varying NOT NULL,
     idestado integer NOT NULL,
-    engdescrhotel character varying(300)
+    imghotel character varying(50)
 );
 
 
@@ -220,7 +261,8 @@ CREATE TABLE plancomida (
     codplan integer NOT NULL,
     nomplan character varying(20) NOT NULL,
     descrplan character varying(150) DEFAULT 'n/a'::character varying NOT NULL,
-    idhotel integer NOT NULL
+    idhotel integer NOT NULL,
+    imgplan character varying(50)
 );
 
 
@@ -338,7 +380,8 @@ CREATE TABLE transporte (
     numpasajeros integer DEFAULT 1 NOT NULL,
     capalmacenaje double precision NOT NULL,
     estadoreserva integer NOT NULL,
-    idhotel integer NOT NULL
+    idhotel integer NOT NULL,
+    imgtransporte character varying(50)
 );
 
 
@@ -443,7 +486,7 @@ COPY adminxcliente (idadmin, idcliente) FROM stdin;
 -- Data for Name: entrada; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY entrada (codentrada, tipoentrada, precioentrada) FROM stdin;
+COPY entrada (codentrada, nombreentrada, tipoentrada, precioentrada, idestado, imgentrada) FROM stdin;
 \.
 
 
@@ -459,56 +502,13 @@ SELECT pg_catalog.setval('entrada_codentrada_seq', 1, false);
 --
 
 COPY estado (idestado, nomestado) FROM stdin;
-1	Florida
-2	Washington
-3	California
-4	Maryland
-5	Kansas
+1	California
+2	Florida
+3	Hawai
+4	Illinois
+5	Nevada
 6	New York
-7	New Mexico
-8	California
-9	Arizona
-10	California
-11	West Virginia
-12	Florida
-13	Virginia
-14	Nevada
-15	North Carolina
-16	New York
-17	Wisconsin
-18	Missouri
-19	New Jersey
-20	North Carolina
-21	Illinois
-22	Texas
-23	Texas
-24	North Carolina
-25	Florida
-26	Texas
-27	Louisiana
-28	Texas
-29	Arizona
-30	Ohio
-31	New York
-32	Texas
-33	Kansas
-34	Oklahoma
-35	Colorado
-36	Tennessee
-37	Oklahoma
-38	California
-39	New York
-40	Texas
-41	North Carolina
-42	Florida
-43	California
-44	Georgia
-45	Florida
-46	Michigan
-47	New York
-48	Texas
-49	Missouri
-50	Texas
+7	Washington
 \.
 
 
@@ -516,7 +516,7 @@ COPY estado (idestado, nomestado) FROM stdin;
 -- Name: estado_idestado_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('estado_idestado_seq', 50, true);
+SELECT pg_catalog.setval('estado_idestado_seq', 7, true);
 
 
 --
@@ -534,7 +534,57 @@ COPY estadoreserva (estadoreserva, estadoactual) FROM stdin;
 -- Data for Name: habitacion; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estadoreserva, idhotel) FROM stdin;
+COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estadoreserva, idhotel, imghabitacion, dethabitacioneng) FROM stdin;
+42	2	42.3500000000000014	no hay descripcion	0	17	\N	theres none
+46	1	39.4500000000000028	no hay descripcion	0	17	\N	theres none
+39	3	49.4099999999999966	no hay descripcion	0	20	\N	theres none
+7	1	33.8500000000000014	no hay descripcion	0	13	\N	theres none
+1	2	72.3299999999999983	no hay descripcion	0	14	\N	theres none
+3	1	19.5500000000000007	no hay descripcion	0	14	\N	theres none
+5	2	10.4800000000000004	no hay descripcion	0	24	\N	theres none
+6	3	20.879999999999999	no hay descripcion	0	24	\N	theres none
+26	1	75.7000000000000028	no hay descripcion	0	13	\N	theres none
+32	3	50.7100000000000009	no hay descripcion	0	14	\N	theres none
+33	2	50.8699999999999974	no hay descripcion	0	23	\N	theres none
+34	3	44.2800000000000011	no hay descripcion	0	24	\N	theres none
+35	1	23.9600000000000009	no hay descripcion	0	13	\N	theres none
+36	3	90.3299999999999983	no hay descripcion	0	21	\N	theres none
+38	1	20.6700000000000017	no hay descripcion	0	15	\N	theres none
+40	1	87.1200000000000045	no hay descripcion	0	22	\N	theres none
+41	3	90.4000000000000057	no hay descripcion	0	18	\N	theres none
+43	2	40.8999999999999986	no hay descripcion	0	22	\N	theres none
+44	1	99.3400000000000034	no hay descripcion	0	19	\N	theres none
+45	1	38.8699999999999974	no hay descripcion	0	21	\N	theres none
+47	3	95.4599999999999937	no hay descripcion	0	24	\N	theres none
+48	1	90.0699999999999932	no hay descripcion	0	19	\N	theres none
+49	3	13.1600000000000001	no hay descripcion	0	15	\N	theres none
+50	1	34.2000000000000028	no hay descripcion	0	20	\N	theres none
+37	2	27.3000000000000007	no hay descripcion	0	17	\N	theres none
+4	1	80.3599999999999994	no hay descripcion	1	17	\N	theres none
+2	1	18.9400000000000013	no hay descripcion	1	18	\N	theres none
+18	3	63.7700000000000031	no hay descripcion	0	19	\N	theres none
+31	2	61.6599999999999966	no hay descripcion	0	20	\N	theres none
+8	2	22.3999999999999986	no hay descripcion	0	21	\N	theres none
+9	3	12.6699999999999999	no hay descripcion	0	18	\N	theres none
+10	2	96.7399999999999949	no hay descripcion	0	24	\N	theres none
+11	3	29.4600000000000009	no hay descripcion	0	24	\N	theres none
+12	2	91.269999999999996	no hay descripcion	0	23	\N	theres none
+13	3	90.25	no hay descripcion	0	13	\N	theres none
+14	1	77.4300000000000068	no hay descripcion	0	17	\N	theres none
+15	2	79.2000000000000028	no hay descripcion	0	18	\N	theres none
+16	3	89.5499999999999972	no hay descripcion	0	20	\N	theres none
+17	1	18.0100000000000016	no hay descripcion	0	18	\N	theres none
+19	3	87.7000000000000028	no hay descripcion	0	20	\N	theres none
+20	2	81.75	no hay descripcion	0	21	\N	theres none
+21	2	49.2899999999999991	no hay descripcion	0	17	\N	theres none
+22	3	23.2600000000000016	no hay descripcion	0	23	\N	theres none
+23	2	15.2799999999999994	no hay descripcion	0	19	\N	theres none
+24	3	23.5700000000000003	no hay descripcion	0	23	\N	theres none
+25	2	57.25	no hay descripcion	0	22	\N	theres none
+27	1	69.7999999999999972	no hay descripcion	0	18	\N	theres none
+28	2	29.9100000000000001	no hay descripcion	0	22	\N	theres none
+29	3	77.2199999999999989	no hay descripcion	0	24	\N	theres none
+30	1	67.2199999999999989	no hay descripcion	0	24	\N	theres none
 \.
 
 
@@ -542,19 +592,26 @@ COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estador
 -- Name: habitacion_codhabitacion_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('habitacion_codhabitacion_seq', 1, false);
+SELECT pg_catalog.setval('habitacion_codhabitacion_seq', 50, true);
 
 
 --
 -- Data for Name: hotel; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY hotel (idhotel, nomhotel, lvlhotel, descrhotel, idestado, engdescrhotel) FROM stdin;
-1	Library Hotel	4	Ubicado en el noreste de Estados Unidos con aproximadamente 8,4 millones de habitantes, dentro de este estado se encuentran algunos de los monumentos y edificios mas reconocidos al rededor del mundo, bordeado por el rio Hudson que forma un puerto natural y que desemboca en el oceano Atlantico.	1	n/a
-2	Liberty Hotel	3	Ubicado en el noreste de Estados Unidos con aproximadamente 8,4 millones de habitantes, dentro de este estado se encuentran algunos de los monumentos y edificios mas reconocidos al rededor del mundo, bordeado por el rio Hudson que forma un puerto natural y que desemboca en el oceano Atlantico.	1	n/a
-3	Pokemon Hotel	3	Ubicado en el noreste de Estados Unidos con aproximadamente.	1	n/a
-4	Digimon Hotel	5	Ubicado en el noreste de Eos Unidos con aproximadamente.	1	n/a
-5	Transilvania Hotel	5	Ubicado en el noreste de Eos Unidos con aproximadamente.	1	n/a
+COPY hotel (idhotel, nomhotel, lvlhotel, descrhotel, descrhoteleng, direchotel, idestado, imghotel) FROM stdin;
+13	Cornell Hotel	2	'no hay'	'none'	40363 Aberg Court	1	\N
+14	Drisco Hotel	5	'no hay'	'none'	7562 Maywood Drive	1	\N
+15	Fairmont Grand del Mar hotel	5	'no hay'	'none'	3850 Huxley Lane	1	\N
+16	Pearl hotel	1	'no hay'	'none'	0 Hanson Place	1	\N
+17	Four seasons Resort	1	'no hay'	'none'	27 Ridgeway Lane	2	\N
+18	Hampton hotel	0	'no hay'	'none'	27 Hooker Center	2	\N
+19	Holilday inn	0	'no hay'	'none'	539 Doe Crossing Parkway	2	\N
+20	Oceanside	3	'no hay'	'none'	0847 Debra Drive	2	\N
+21	Embassy suites by hilton waikiki	1	'no hay'	'none'	45 Bonner Point	3	\N
+22	Halekulani	0	'no hay'	'none'	55315 Holy Cross Place	3	\N
+23	The Modern Honolulu	1	'no hay'	'none'	966 Luster Lane	3	\N
+24	TI Hotel Waikiki	3	'no hay'	'none'	45546 Chinook Drive	3	\N
 \.
 
 
@@ -562,14 +619,14 @@ COPY hotel (idhotel, nomhotel, lvlhotel, descrhotel, idestado, engdescrhotel) FR
 -- Name: hotel_idhotel_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('hotel_idhotel_seq', 5, true);
+SELECT pg_catalog.setval('hotel_idhotel_seq', 24, true);
 
 
 --
 -- Data for Name: plancomida; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY plancomida (codplan, nomplan, descrplan, idhotel) FROM stdin;
+COPY plancomida (codplan, nomplan, descrplan, idhotel, imgplan) FROM stdin;
 \.
 
 
@@ -585,6 +642,8 @@ SELECT pg_catalog.setval('plancomida_codplan_seq', 1, false);
 --
 
 COPY reserva (codreserva, fechainicior, fechafinr, numadultos, numninnos, idfactura, idusuario, idestado, codtransporte, idhotel) FROM stdin;
+70	2016-07-01	2016-07-08	1	0	20	2	2	\N	17
+71	2016-07-01	2016-07-08	1	0	21	1	2	\N	18
 \.
 
 
@@ -592,7 +651,7 @@ COPY reserva (codreserva, fechainicior, fechafinr, numadultos, numninnos, idfact
 -- Name: reserva_codreserva_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('reserva_codreserva_seq', 1, false);
+SELECT pg_catalog.setval('reserva_codreserva_seq', 71, true);
 
 
 --
@@ -608,6 +667,8 @@ COPY reservaxentrada (codreserva, codentrada, cantidad, fecha) FROM stdin;
 --
 
 COPY reservaxhabitacion (codreserva, codhabitacion, canttipo) FROM stdin;
+70	4	1
+71	2	1
 \.
 
 
@@ -623,7 +684,7 @@ COPY reservaxplan (codreserva, codplan, cantidad) FROM stdin;
 -- Data for Name: transporte; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY transporte (codtransporte, modelotransporte, numpasajeros, capalmacenaje, estadoreserva, idhotel) FROM stdin;
+COPY transporte (codtransporte, modelotransporte, numpasajeros, capalmacenaje, estadoreserva, idhotel, imgtransporte) FROM stdin;
 \.
 
 
@@ -658,6 +719,14 @@ ALTER TABLE ONLY adminxcliente
 
 ALTER TABLE ONLY entrada
     ADD CONSTRAINT entrada_pkey PRIMARY KEY (codentrada);
+
+
+--
+-- Name: estado_nomestado_key; Type: CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY estado
+    ADD CONSTRAINT estado_nomestado_key UNIQUE (nomestado);
 
 
 --
@@ -770,6 +839,14 @@ ALTER TABLE ONLY adminxcliente
 
 ALTER TABLE ONLY adminxcliente
     ADD CONSTRAINT adminxcliente_idcliente_fkey FOREIGN KEY (idcliente) REFERENCES usuario(idusuario) ON DELETE CASCADE;
+
+
+--
+-- Name: entrada_idestado_fkey; Type: FK CONSTRAINT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY entrada
+    ADD CONSTRAINT entrada_idestado_fkey FOREIGN KEY (idestado) REFERENCES estado(idestado) ON DELETE CASCADE;
 
 
 --

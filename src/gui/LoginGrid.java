@@ -71,11 +71,11 @@ public class LoginGrid extends GridPane {
 			public void handle( ActionEvent e ) {
 				System.out.println( "Login..." );
 				if( validate_login() ){
-					boolean exists = SQLInteractor.searchUser( txt_email.getText(), txt_password.getText() );
+					boolean exists = SQLUser.searchUser( txt_email.getText(), txt_password.getText() );
 					if( exists ){
-						SQLInteractor.setActive( txt_email.getText(), txt_password.getText() );
+						SQLUser.setActive( txt_email.getText(), txt_password.getText() );
 						User activeUser = new User();
-						activeUser = SQLInteractor.getActive();
+						activeUser = SQLUser.getActive();
 						lbl_error.setText( "Login!" );
 						if( activeUser.getRole() == 0 ){
 							if( button_translate.getText().equals( "Español" ) ) {

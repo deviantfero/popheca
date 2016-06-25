@@ -1,8 +1,9 @@
 package gui;
 
-import dblib.SQLInteractor;
+import dblib.*;
 import data.User;
 import data.Reserve;
+import data.HotelChecker;
 
 //import java.io.File;
 
@@ -90,7 +91,7 @@ public class SearchGrid extends GridPane {
 		this.lbl_activeUser = new Text( "" );
 		this.lbl_activeUser.getStyleClass().add( "welcome_message" );
 		this.lbl_activeUser.setTextAlignment( TextAlignment.CENTER );
-		activeUser = SQLInteractor.getActive();
+		activeUser = SQLUser.getActive();
 		if( activeUser != null )
 			this.lbl_activeUser.setText( "Bienvenid@, " + activeUser.getName() + " " + activeUser.getLastname() );
 		this.txt_state = new TextField();
@@ -116,42 +117,7 @@ public class SearchGrid extends GridPane {
 		this.button_search.setOnAction( new EventHandler<ActionEvent>(){
 			@Override
 			public void handle( ActionEvent e ){
-				int i = 0;
-				change_searchterms();
-				message = new Reserve( date_in, date_out );
-				message.setKids(Integer.parseInt( txt_amountkid.getText() ));
-				message.setAdults(Integer.parseInt( txt_amount.getText() ));
-				message.setIdState( SQLInteractor.getStateID( txt_state.getText() ) );
-				if( validate_dates() && validate_amounts() ){
-					resultGrids = SQLInteractor.searchHotel( txt_state.getText(), translate );
-					for( HotelGrid hotel : resultGrids ) {
-						hotel.getButton_select().setOnAction( new EventHandler<ActionEvent>() {
-							@Override
-							public void handle( ActionEvent e ) {
-								//testing room results
-								int j = 0;
-								System.out.println( hotel.getTxt_hname() );
-								results.getChildren().clear();
-								ArrayList<RoomGrid> RoomList = SQLInteractor.searchRoom( hotel.getTxt_hname(),
-																translate, txt_state.getText(), message );
-								for( RoomGrid room : RoomList ) {
-									results.add( room, 0, j );
-									j++;
-								}
-								//smooth sailing cowboy
-							}
-						});
-						results.add( hotel, 0, i );
-						i++;
-					}
-					lbl_error.setVisible( false );
-					top.setVisible( false );
-					searchTerms.setVisible( true );
-					resultscontainer.setVisible( true );
-				}else{
-					lbl_error.setVisible( true );
-					System.err.println( "wrong date range" );
-				}
+				action_searchHotel();
 			}
 		});
 
@@ -311,6 +277,64 @@ public class SearchGrid extends GridPane {
 				return true;
 		}else{
 			return false;
+		}
+	}
+
+	private void validate_location( HotelGrid hotel, ArrayList<HotelChecker> userStays ) {
+		for( HotelChecker check : userStays ){
+			if( date_in.getValue().compareTo( check.getIn_date() ) >= 0 && date_in.getValue().compareTo( check.getOut_date() ) <= 0 ){
+				if( check.getId_hotel() != hotel.getHotel_id() )
+					hotel.getButton_select().setDisable( true );
+			}else if( date_out.getValue().compareTo( check.getIn_date() ) >= 0 && date_out.getValue().compareTo( check.getOut_date()) <= 0 ){
+				System.out.println( "" + check.getId_hotel() + hotel.getHotel_id() );
+				if( check.getId_hotel() != hotel.getHotel_id() )
+					hotel.getButton_select().setDisable( true );
+			}
+		}
+	}
+
+	public void action_searchHotel() {
+		int i = 0;
+		change_searchterms();
+		message = new Reserve( date_in, date_out );
+		message.setKids(Integer.parseInt( txt_amountkid.getText() ));
+		message.setAdults(Integer.parseInt( txt_amount.getText() ));
+		message.setIdState( SQLInteractor.getStateID( txt_state.getText() ) );
+		if( validate_dates() && validate_amounts() ){
+			resultGrids = SQLHotel.searchHotel( txt_state.getText(), translate );
+			ArrayList<HotelChecker> userStays = SQLHotel.getUserStays( activeUser.getId() );
+			for( HotelGrid hotel : resultGrids ) {
+				validate_location( hotel, userStays );
+				hotel.getButton_select().setOnAction( new EventHandler<ActionEvent>() {
+					@Override
+					public void handle( ActionEvent e ) {
+						action_searchRoom( hotel );
+					}
+				});
+				results.add( hotel, 0, i );
+				i++;
+			}
+			lbl_error.setVisible( false );
+			top.setVisible( false );
+			searchTerms.setVisible( true );
+			resultscontainer.setVisible( true );
+		}else{
+			lbl_error.setVisible( true );
+			System.err.println( "wrong date range" );
+		}
+	}
+
+	public void action_searchRoom( HotelGrid hotel ) {
+		int j = 0;
+		if( true ){
+			System.out.println( hotel.getTxt_hname() );
+			results.getChildren().clear();
+			ArrayList<RoomGrid> RoomList = SQLRoom.searchRoom( hotel.getTxt_hname(),
+					translate, txt_state.getText(), message );
+			for( RoomGrid room : RoomList ) {
+				results.add( room, 0, j );
+				j++;
+			}
 		}
 	}
 

@@ -34,7 +34,7 @@ public class Main extends Application {
 
 	@Override
 	public void stop() {
-		SQLInteractor.closeUsers();
+		SQLUser.closeUsers();
 		System.out.println( "Exit succesfully" );
 	}
 }

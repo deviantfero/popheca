@@ -1,6 +1,6 @@
 package gui;
 
-import dblib.SQLInteractor;
+import dblib.*;
 import data.User;
 
 //import java.io.File;
@@ -11,7 +11,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.HPos;
@@ -36,7 +35,7 @@ public class AdminGrid extends GridPane {
 		Loader.loadCss( "adminwin.css", this.mainScene );
 		this.frame.getStyleClass().add( "frame" );
 		this.translate = translate;
-		this.activeUser = SQLInteractor.getActive();
+		this.activeUser = SQLUser.getActive();
 		this.button_manageUsers = new Button( "Eliminar Usuarios" );
 		this.button_manageUsers.setMinWidth( 150 );
 		this.button_manageUsers.setOnAction( new EventHandler<ActionEvent>(){

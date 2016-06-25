@@ -1,6 +1,6 @@
 package gui;
 
-import dblib.SQLInteractor;
+import dblib.*;
 import data.User;
 
 //import java.io.File;
@@ -90,7 +90,7 @@ public class RegisterGrid extends GridPane {
 				if( validate_register() ){
 					User newUser = new User( txt_name.getText(), txt_lastname.getText(), 
 							txt_email.getText(), txt_newPass.getText() );
-					SQLInteractor.registerUser( newUser );
+					SQLUser.registerUser( newUser );
 					newUser = new User();
 				}
 			}
@@ -148,7 +148,7 @@ public class RegisterGrid extends GridPane {
 			&& this.txt_email.getText().matches( "^[a-zA-Z0-9]+([ _-]|\\.)?[A-Za-z0-9]+@[a-z]+\\.[a-z\\.]+" ) 
 			&& this.txt_newPass.getText().equals( this.txt_newPassConfirm.getText() )
 			&& this.txt_newPass.getText().matches(".{4,16}")){
-			if( SQLInteractor.searchUser(txt_email.getText()) ){
+			if( SQLUser.searchUser(txt_email.getText()) ){
 				System.out.println( "SQL::Email already used" );
 				if( this.translate ){
 					lbl_error.setText( "Email already used" );

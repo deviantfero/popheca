@@ -1,7 +1,5 @@
 package gui;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.image.Image;
@@ -22,6 +20,7 @@ public class HotelGrid extends GridPane {
 	private ImageView view_rating;
 	private Button button_select;
 	private GridPane container;
+	private int hotel_id;
 
 	public HotelGrid( boolean translate ) {
 		super();
@@ -88,6 +87,20 @@ public class HotelGrid extends GridPane {
 
 	public Button getButton_select() {
 		return button_select;
+	}
+
+	/**
+	 * @return the hotel_id
+	 */
+	public int getHotel_id() {
+		return hotel_id;
+	}
+
+	/**
+	 * @param hotel_id the hotel_id to set
+	 */
+	public void setHotel_id(int hotel_id) {
+		this.hotel_id = hotel_id;
 	}
 
 	public void setTxt_direction(String txt_direction) {
