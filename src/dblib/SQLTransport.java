@@ -25,18 +25,18 @@ public class SQLTransport {
 			ResultSet rs = search.executeQuery();
 			while( rs.next() ) {
 				String image_path = new String( "/gui/styles/img/transport"
-												+ "/" + rs.getString( "modelotransporte" ).toLowerCase() + ".jpg");
+												+ "/" + rs.getString( "modelotransporte" ).toLowerCase() + ".png");
 
 				TransportGrid result = new TransportGrid( translate, new Register(), message );
 
 				result.setTxt_price( rs.getDouble( "prectransporte" ) );
 				result.setIdtransport( rs.getInt( "codtransporte" ) );
-				result.setTxt_model( rs.getString( "modelotransporte" ) );
+				result.setTxt_passengers( rs.getString( "modelotransporte" ) );
 				result.setTxt_state( rs.getInt( "estadoreserva" ) );
 				if( translate )
-					result.setTxt_passengers( "Passengers: " + rs.getInt( "numpasajeros" ) );
+					result.setTxt_model( "Passengers: " + rs.getInt( "numpasajeros" ) );
 				else
-					result.setTxt_passengers( "Pasajeros: " + rs.getInt( "numpasajeros" ) );
+					result.setTxt_model( "Pasajeros: " + rs.getInt( "numpasajeros" ) );
 				try{
 					result.setImageRoom( image_path.replaceAll( " ", "\\ " ) );
 				}catch( Exception e ){

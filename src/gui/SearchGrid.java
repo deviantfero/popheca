@@ -299,10 +299,10 @@ public class SearchGrid extends GridPane {
 		int i = 0;
 		change_searchterms();
 		message = new Reserve( date_in, date_out );
-		message.setKids(Integer.parseInt( txt_amountkid.getText() ));
-		message.setAdults(Integer.parseInt( txt_amount.getText() ));
 		message.setIdState( SQLInteractor.getStateID( txt_state.getText() ) );
 		if( validate_dates() && validate_amounts() ){
+			message.setKids(Integer.parseInt( txt_amountkid.getText() ));
+			message.setAdults(Integer.parseInt( txt_amount.getText() ));
 			resultGrids = SQLHotel.searchHotel( txt_state.getText(), translate );
 			ArrayList<HotelChecker> userStays = SQLHotel.getUserStays( activeUser.getId() );
 			for( HotelGrid hotel : resultGrids ) {

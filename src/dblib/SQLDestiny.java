@@ -30,9 +30,9 @@ public class SQLDestiny {
 				result.setIdplan( rs.getInt( "codentrada" ) );
 				result.setTxt_plan( rs.getString( "nombreentrada" ) );
 				if( translate )
-					result.setTxt_descr( rs.getString( "tipoentrada" ) );
-				else
 					result.setTxt_descr( rs.getString( "tipoentradaeng" ) );
+				else
+					result.setTxt_descr( rs.getString( "tipoentrada" ) );
 				try{
 					result.setImageRoom( image_path.replaceAll( " ", "\\ " ) );
 				}catch( Exception e ){

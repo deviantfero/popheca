@@ -23,6 +23,11 @@
 	-fx-fill: #202020;
 	-fx-font-size: 14px;
 }
+#welcome_message {
+	-fx-font-weight: bolder;
+	-fx-fill: #202020;
+	-fx-font-size: 14px;
+}
 
 .search_terms {
 /*	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 20, 0, 0, 0);/**/

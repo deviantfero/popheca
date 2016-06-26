@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.time.LocalDate;
 
 import data.Reserve;
@@ -162,11 +163,12 @@ public class SQLInteractor {
 		PreparedStatement search = null;
 		try{
 			Connection c = SQLInteractor.connect();
-			String newString = "insert into reservaxentrada (codreserva, codentrada, cantidad) values ( ?, ?, ? )";
+			String newString = "insert into reservaxentrada (codreserva, codentrada, cantidad, fecha ) values ( ?, ?, ?, ? )";
 			search = c.prepareStatement( newString );
 			search.setInt( 1, SQLInteractor.getLastReserveID());
 			search.setInt( 2, register_destiny.getItemid() );
 			search.setInt( 3, register_destiny.getKids() + register_destiny.getAdults() );
+			search.setDate( 4, Date.valueOf(register_destiny.getIn_date() ));
 			search.executeUpdate();
 			c.close();
 		}catch( Exception e ) {

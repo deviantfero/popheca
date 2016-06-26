@@ -30,6 +30,21 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
+-- Name: cleanreserve(); Type: FUNCTION; Schema: public; Owner: fernando
+--
+
+CREATE FUNCTION cleanreserve() RETURNS void
+    LANGUAGE sql
+    AS $$
+	truncate table reserva cascade;
+	update habitacion set estadoReserva=0;
+	update transporte set estadoreserva=0;
+$$;
+
+
+ALTER FUNCTION public.cleanreserve() OWNER TO fernando;
+
+--
 -- Name: getroom_reserve(integer); Type: FUNCTION; Schema: public; Owner: fernando
 --
 
@@ -103,7 +118,8 @@ CREATE TABLE entrada (
     tipoentrada character varying(50) NOT NULL,
     precioentrada double precision NOT NULL,
     idestado integer NOT NULL,
-    imgentrada character varying(50)
+    imgentrada character varying(50),
+    tipoentradaeng character varying(50) NOT NULL
 );
 
 
@@ -262,7 +278,9 @@ CREATE TABLE plancomida (
     nomplan character varying(20) NOT NULL,
     descrplan character varying(150) DEFAULT 'n/a'::character varying NOT NULL,
     idhotel integer NOT NULL,
-    imgplan character varying(50)
+    imgplan character varying(50),
+    descrplaneng character varying(150),
+    precioplan double precision DEFAULT 0 NOT NULL
 );
 
 
@@ -302,8 +320,8 @@ CREATE TABLE reserva (
     idfactura integer NOT NULL,
     idusuario integer NOT NULL,
     idestado integer NOT NULL,
-    codtransporte character varying(7),
-    idhotel integer NOT NULL
+    idhotel integer NOT NULL,
+    codtransporte integer
 );
 
 
@@ -375,17 +393,38 @@ ALTER TABLE reservaxplan OWNER TO fernando;
 --
 
 CREATE TABLE transporte (
-    codtransporte character varying(7) NOT NULL,
     modelotransporte character varying(10) NOT NULL,
     numpasajeros integer DEFAULT 1 NOT NULL,
-    capalmacenaje double precision NOT NULL,
     estadoreserva integer NOT NULL,
     idhotel integer NOT NULL,
-    imgtransporte character varying(50)
+    imgtransporte character varying(50),
+    codtransporte integer NOT NULL,
+    prectransporte double precision DEFAULT 0.00 NOT NULL
 );
 
 
 ALTER TABLE transporte OWNER TO fernando;
+
+--
+-- Name: transporte_codtransporte_seq; Type: SEQUENCE; Schema: public; Owner: fernando
+--
+
+CREATE SEQUENCE transporte_codtransporte_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE transporte_codtransporte_seq OWNER TO fernando;
+
+--
+-- Name: transporte_codtransporte_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: fernando
+--
+
+ALTER SEQUENCE transporte_codtransporte_seq OWNED BY transporte.codtransporte;
+
 
 --
 -- Name: usuario; Type: TABLE; Schema: public; Owner: fernando
@@ -468,6 +507,13 @@ ALTER TABLE ONLY reserva ALTER COLUMN codreserva SET DEFAULT nextval('reserva_co
 
 
 --
+-- Name: codtransporte; Type: DEFAULT; Schema: public; Owner: fernando
+--
+
+ALTER TABLE ONLY transporte ALTER COLUMN codtransporte SET DEFAULT nextval('transporte_codtransporte_seq'::regclass);
+
+
+--
 -- Name: idusuario; Type: DEFAULT; Schema: public; Owner: fernando
 --
 
@@ -486,7 +532,11 @@ COPY adminxcliente (idadmin, idcliente) FROM stdin;
 -- Data for Name: entrada; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY entrada (codentrada, nombreentrada, tipoentrada, precioentrada, idestado, imgentrada) FROM stdin;
+COPY entrada (codentrada, nombreentrada, tipoentrada, precioentrada, idestado, imgentrada, tipoentradaeng) FROM stdin;
+1	Golden Gate	no hay	72	1	\N	there's none
+2	Hollywood	no hay	47	1	\N	there's none
+3	Magic Kingdom	no hay	21	2	\N	there's none
+4	Orlando Resort	no hay	78	2	\N	there's none
 \.
 
 
@@ -494,7 +544,7 @@ COPY entrada (codentrada, nombreentrada, tipoentrada, precioentrada, idestado, i
 -- Name: entrada_codentrada_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('entrada_codentrada_seq', 1, false);
+SELECT pg_catalog.setval('entrada_codentrada_seq', 4, true);
 
 
 --
@@ -535,23 +585,28 @@ COPY estadoreserva (estadoreserva, estadoactual) FROM stdin;
 --
 
 COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estadoreserva, idhotel, imghabitacion, dethabitacioneng) FROM stdin;
+17	1	18.0100000000000016	no hay descripcion	0	18	\N	theres none
+2	1	18.9400000000000013	no hay descripcion	0	18	\N	theres none
+4	1	80.3599999999999994	no hay descripcion	0	17	\N	theres none
+21	2	49.2899999999999991	no hay descripcion	0	17	\N	theres none
 42	2	42.3500000000000014	no hay descripcion	0	17	\N	theres none
-46	1	39.4500000000000028	no hay descripcion	0	17	\N	theres none
-39	3	49.4099999999999966	no hay descripcion	0	20	\N	theres none
+37	2	27.3000000000000007	no hay descripcion	0	17	\N	theres none
 7	1	33.8500000000000014	no hay descripcion	0	13	\N	theres none
+35	1	23.9600000000000009	no hay descripcion	0	13	\N	theres none
+39	3	49.4099999999999966	no hay descripcion	0	20	\N	theres none
 1	2	72.3299999999999983	no hay descripcion	0	14	\N	theres none
 3	1	19.5500000000000007	no hay descripcion	0	14	\N	theres none
+41	3	90.4000000000000057	no hay descripcion	0	18	\N	theres none
+14	1	77.4300000000000068	no hay descripcion	0	17	\N	theres none
 5	2	10.4800000000000004	no hay descripcion	0	24	\N	theres none
 6	3	20.879999999999999	no hay descripcion	0	24	\N	theres none
 26	1	75.7000000000000028	no hay descripcion	0	13	\N	theres none
 32	3	50.7100000000000009	no hay descripcion	0	14	\N	theres none
 33	2	50.8699999999999974	no hay descripcion	0	23	\N	theres none
 34	3	44.2800000000000011	no hay descripcion	0	24	\N	theres none
-35	1	23.9600000000000009	no hay descripcion	0	13	\N	theres none
 36	3	90.3299999999999983	no hay descripcion	0	21	\N	theres none
 38	1	20.6700000000000017	no hay descripcion	0	15	\N	theres none
 40	1	87.1200000000000045	no hay descripcion	0	22	\N	theres none
-41	3	90.4000000000000057	no hay descripcion	0	18	\N	theres none
 43	2	40.8999999999999986	no hay descripcion	0	22	\N	theres none
 44	1	99.3400000000000034	no hay descripcion	0	19	\N	theres none
 45	1	38.8699999999999974	no hay descripcion	0	21	\N	theres none
@@ -559,9 +614,6 @@ COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estador
 48	1	90.0699999999999932	no hay descripcion	0	19	\N	theres none
 49	3	13.1600000000000001	no hay descripcion	0	15	\N	theres none
 50	1	34.2000000000000028	no hay descripcion	0	20	\N	theres none
-37	2	27.3000000000000007	no hay descripcion	0	17	\N	theres none
-4	1	80.3599999999999994	no hay descripcion	1	17	\N	theres none
-2	1	18.9400000000000013	no hay descripcion	1	18	\N	theres none
 18	3	63.7700000000000031	no hay descripcion	0	19	\N	theres none
 31	2	61.6599999999999966	no hay descripcion	0	20	\N	theres none
 8	2	22.3999999999999986	no hay descripcion	0	21	\N	theres none
@@ -570,21 +622,19 @@ COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estador
 11	3	29.4600000000000009	no hay descripcion	0	24	\N	theres none
 12	2	91.269999999999996	no hay descripcion	0	23	\N	theres none
 13	3	90.25	no hay descripcion	0	13	\N	theres none
-14	1	77.4300000000000068	no hay descripcion	0	17	\N	theres none
 15	2	79.2000000000000028	no hay descripcion	0	18	\N	theres none
 16	3	89.5499999999999972	no hay descripcion	0	20	\N	theres none
-17	1	18.0100000000000016	no hay descripcion	0	18	\N	theres none
 19	3	87.7000000000000028	no hay descripcion	0	20	\N	theres none
 20	2	81.75	no hay descripcion	0	21	\N	theres none
-21	2	49.2899999999999991	no hay descripcion	0	17	\N	theres none
 22	3	23.2600000000000016	no hay descripcion	0	23	\N	theres none
 23	2	15.2799999999999994	no hay descripcion	0	19	\N	theres none
 24	3	23.5700000000000003	no hay descripcion	0	23	\N	theres none
 25	2	57.25	no hay descripcion	0	22	\N	theres none
-27	1	69.7999999999999972	no hay descripcion	0	18	\N	theres none
 28	2	29.9100000000000001	no hay descripcion	0	22	\N	theres none
 29	3	77.2199999999999989	no hay descripcion	0	24	\N	theres none
 30	1	67.2199999999999989	no hay descripcion	0	24	\N	theres none
+46	1	39.4500000000000028	no hay descripcion	0	17	\N	theres none
+27	1	69.7999999999999972	no hay descripcion	0	18	\N	theres none
 \.
 
 
@@ -626,7 +676,43 @@ SELECT pg_catalog.setval('hotel_idhotel_seq', 24, true);
 -- Data for Name: plancomida; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY plancomida (codplan, nomplan, descrplan, idhotel, imgplan) FROM stdin;
+COPY plancomida (codplan, nomplan, descrplan, idhotel, imgplan, descrplaneng, precioplan) FROM stdin;
+13	Buffet	n/a	13	\N	\N	7.79000000000000004
+14	Buffet	n/a	14	\N	\N	14.5500000000000007
+15	Buffet	n/a	15	\N	\N	16.8500000000000014
+16	Buffet	n/a	16	\N	\N	14.2300000000000004
+17	Buffet	n/a	17	\N	\N	7.21999999999999975
+18	Buffet	n/a	18	\N	\N	8.58000000000000007
+19	Buffet	n/a	19	\N	\N	18.0599999999999987
+20	Buffet	n/a	20	\N	\N	19.3599999999999994
+21	Buffet	n/a	21	\N	\N	14.7899999999999991
+22	Buffet	n/a	22	\N	\N	18.9600000000000009
+23	Buffet	n/a	23	\N	\N	11.7400000000000002
+24	Buffet	n/a	24	\N	\N	17.8500000000000014
+25	Deluxe	n/a	13	\N	\N	38.7899999999999991
+26	Deluxe	n/a	14	\N	\N	36.740000000000002
+27	Deluxe	n/a	15	\N	\N	39.8800000000000026
+28	Deluxe	n/a	16	\N	\N	24.9499999999999993
+29	Deluxe	n/a	17	\N	\N	23.6799999999999997
+30	Deluxe	n/a	18	\N	\N	44.0700000000000003
+31	Deluxe	n/a	19	\N	\N	41.2899999999999991
+32	Deluxe	n/a	20	\N	\N	28.5199999999999996
+33	Deluxe	n/a	21	\N	\N	40.4299999999999997
+34	Deluxe	n/a	22	\N	\N	28.3900000000000006
+35	Deluxe	n/a	23	\N	\N	23.6600000000000001
+36	Deluxe	n/a	24	\N	\N	23.8299999999999983
+1	Simple	n/a	13	\N	\N	2.2200000000000002
+2	Simple	n/a	14	\N	\N	6.04000000000000004
+3	Simple	n/a	15	\N	\N	3.50999999999999979
+4	Simple	n/a	16	\N	\N	8.08999999999999986
+5	Simple	n/a	17	\N	\N	1.83000000000000007
+6	Simple	n/a	18	\N	\N	8.97000000000000064
+7	Simple	n/a	19	\N	\N	4.08999999999999986
+8	Simple	n/a	20	\N	\N	2.95000000000000018
+9	Simple	n/a	21	\N	\N	5.25
+10	Simple	n/a	22	\N	\N	6.25
+11	Simple	n/a	23	\N	\N	6.59999999999999964
+12	Simple	n/a	24	\N	\N	3.89999999999999991
 \.
 
 
@@ -641,9 +727,7 @@ SELECT pg_catalog.setval('plancomida_codplan_seq', 1, false);
 -- Data for Name: reserva; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY reserva (codreserva, fechainicior, fechafinr, numadultos, numninnos, idfactura, idusuario, idestado, codtransporte, idhotel) FROM stdin;
-70	2016-07-01	2016-07-08	1	0	20	2	2	\N	17
-71	2016-07-01	2016-07-08	1	0	21	1	2	\N	18
+COPY reserva (codreserva, fechainicior, fechafinr, numadultos, numninnos, idfactura, idusuario, idestado, idhotel, codtransporte) FROM stdin;
 \.
 
 
@@ -651,7 +735,7 @@ COPY reserva (codreserva, fechainicior, fechafinr, numadultos, numninnos, idfact
 -- Name: reserva_codreserva_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('reserva_codreserva_seq', 71, true);
+SELECT pg_catalog.setval('reserva_codreserva_seq', 122, true);
 
 
 --
@@ -667,8 +751,6 @@ COPY reservaxentrada (codreserva, codentrada, cantidad, fecha) FROM stdin;
 --
 
 COPY reservaxhabitacion (codreserva, codhabitacion, canttipo) FROM stdin;
-70	4	1
-71	2	1
 \.
 
 
@@ -684,8 +766,69 @@ COPY reservaxplan (codreserva, codplan, cantidad) FROM stdin;
 -- Data for Name: transporte; Type: TABLE DATA; Schema: public; Owner: fernando
 --
 
-COPY transporte (codtransporte, modelotransporte, numpasajeros, capalmacenaje, estadoreserva, idhotel, imgtransporte) FROM stdin;
+COPY transporte (modelotransporte, numpasajeros, estadoreserva, idhotel, imgtransporte, codtransporte, prectransporte) FROM stdin;
+Chrysler	4	0	22	\N	103	205.349999999999994
+Yamaha	1	0	22	\N	105	834.460000000000036
+Mitsubishi	4	0	19	\N	107	387.939999999999998
+Toyota	2	0	19	\N	111	394
+Chrysler	4	0	23	\N	113	395.310000000000002
+Hummer	6	0	20	\N	114	607.309999999999945
+Toyota	2	0	14	\N	116	868.850000000000023
+Toyota	2	0	19	\N	121	351.779999999999973
+Mitsubishi	4	0	15	\N	122	246.460000000000008
+Chrysler	4	0	23	\N	123	274.769999999999982
+Mitsubishi	4	0	24	\N	127	776.379999999999995
+Toyota	2	0	13	\N	106	790.120000000000005
+Mitsubishi	4	0	18	\N	187	364.54000000000002
+Mitsubishi	4	0	23	\N	192	550.899999999999977
+Chrysler	4	0	15	\N	193	369.009999999999991
+Mitsubishi	4	0	18	\N	197	383.769999999999982
+Chrysler	4	0	13	\N	198	207.150000000000006
+Hummer	6	0	23	\N	199	256.769999999999982
+Yamaha	1	0	13	\N	200	267.910000000000025
+Hummer	6	0	17	\N	104	422.70999999999998
+Mitsubishi	4	0	18	\N	102	377.519999999999982
+Chrysler	4	0	17	\N	138	440.399999999999977
+Hummer	6	0	23	\N	129	790.970000000000027
+Yamaha	1	0	19	\N	130	308.410000000000025
+Yamaha	1	0	16	\N	135	872.990000000000009
+Toyota	2	0	14	\N	136	783.5
+Hummer	6	0	16	\N	139	484.339999999999975
+Mitsubishi	4	0	18	\N	142	544.690000000000055
+Hummer	6	0	22	\N	144	206.849999999999994
+Yamaha	1	0	23	\N	145	574.019999999999982
+Hummer	6	0	24	\N	149	642.110000000000014
+Toyota	2	0	23	\N	151	635.360000000000014
+Chrysler	4	0	24	\N	153	546.340000000000032
+Yamaha	1	0	15	\N	155	280.240000000000009
+Toyota	2	0	15	\N	156	746.240000000000009
+Chrysler	4	0	16	\N	158	810.909999999999968
+Hummer	6	0	19	\N	159	599.950000000000045
+Yamaha	1	0	19	\N	160	243.949999999999989
+Toyota	2	0	14	\N	161	428.829999999999984
+Mitsubishi	4	0	19	\N	162	395.009999999999991
+Hummer	6	0	15	\N	164	439.089999999999975
+Toyota	2	0	13	\N	166	339.980000000000018
+Chrysler	4	0	22	\N	168	506.699999999999989
+Hummer	6	0	22	\N	169	708.82000000000005
+Toyota	2	0	22	\N	171	200.060000000000002
+Mitsubishi	4	0	22	\N	172	328.920000000000016
+Hummer	6	0	24	\N	174	898.659999999999968
+Chrysler	4	0	15	\N	178	783.480000000000018
+Chrysler	4	0	16	\N	183	257.45999999999998
+Hummer	6	0	21	\N	184	766.370000000000005
+Yamaha	1	0	13	\N	185	855.159999999999968
+Toyota	2	0	21	\N	186	800.129999999999995
+Chrysler	4	0	17	\N	128	851.580000000000041
+Hummer	6	0	17	\N	134	733.590000000000032
 \.
+
+
+--
+-- Name: transporte_codtransporte_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
+--
+
+SELECT pg_catalog.setval('transporte_codtransporte_seq', 200, true);
 
 
 --

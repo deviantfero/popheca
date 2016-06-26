@@ -3,6 +3,7 @@ package gui;
 import dblib.*;
 import data.Reserve;
 import data.Register;
+import data.PDFPrinter;
 
 //import java.io.File;
 
@@ -29,6 +30,9 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 
 public class ReceiptGrid extends GridPane {
+	private int width;
+	private int height;
+	private double total;
 	private Scene mainScene;
 	private Reserve message;
 	private ObservableList<Register> data;
@@ -45,15 +49,15 @@ public class ReceiptGrid extends GridPane {
 
 	private Text lbl_header;
 	private DatePicker datein_destiny;
-	private DatePicker dateout_destiny;
 	private GridPane container_button;
 	private Button button_accept;
 	private Button button_cancel;
 	private Button button_food;
-	private Button button_transport;
-	private Button button_destiny;
-	private Button button_back;
+	private Button button_transport; 
+	private Button button_destiny; 
+	private Button button_back; 
 	private TableView<Register> table_receipt;
+	private GridPane container_date_button;
 
 	private ScrollPane resultscontainer;
 	private GridPane results;
@@ -74,6 +78,11 @@ public class ReceiptGrid extends GridPane {
 		this.container.setHgap( 10 );
 		this.container_button = new GridPane();
 		this.container_button.setHgap( 10 );
+		this.container_date_button = new GridPane();
+		this.container_date_button.setHgap( 10 );
+		this.container_date_button.setVisible( false );
+		super.setHalignment( this.container_date_button, HPos.CENTER );
+		super.setMargin( this.container_date_button, new Insets( -30, 0, 0, 250 ) );
 
 		this.results = new GridPane();
 		this.results.setVgap( 10 );
@@ -86,14 +95,28 @@ public class ReceiptGrid extends GridPane {
 		this.resultscontainer.setMaxHeight( 300 );
 
 		this.temp_register = this.message.makeRegister( translate );
+		this.total = temp_register.getPrice();
 
-		super.setMargin( this.container, new Insets( 120, 0, 0, 90 ) );
-		super.setMargin( this.resultscontainer, new Insets( 120, 0, 0, 90 ) );
+		super.setMargin( this.container, new Insets( 10, 0, 0, 100 ) );
+		super.setMargin( this.resultscontainer, new Insets( -40, 0, 0, 100 ) );
+		super.setMargin( this.results, new Insets( 0, 0, 0, 20 ) );
 		super.setHalignment( this.container_button, HPos.CENTER );
-		this.mainScene = new Scene( this, 850, 600 );
+		this.width = 850;
+		this.height = 600;
+		this.mainScene = new Scene( this, width, height );
 		Loader.loadCss( "search.css", this.mainScene );
 
-		this.lbl_header = new Text();
+		if( translate )
+			this.lbl_header = new Text( "Choose your plan and confirm the reservation  Total: $" + String.format("%.2f",total) );
+		else
+			this.lbl_header = new Text( "Elije tus planes y confirma la reserva  Total: $" + String.format("%.2f",total) );
+		this.lbl_header.setTextAlignment( TextAlignment.CENTER );
+		super.setHalignment( this.lbl_header, HPos.CENTER );
+		this.lbl_header.setId( "welcome_message" );
+
+		this.datein_destiny = new DatePicker();
+		this.datein_destiny.setPromptText( "Escoje un dia para evento" );
+		this.datein_destiny.setDisable( true );
 
 		this.button_cancel = new Button( "Cancelar" );
 		this.button_cancel.setMinWidth( 120 );
@@ -149,25 +172,35 @@ public class ReceiptGrid extends GridPane {
 					SQLInteractor.addTransportReservation( register_transport );
 					System.out.println( "SQL::Reservacion trasnporte completa" );
 				}
+				new PDFPrinter( message, translate, 
+						register_food, register_transport, register_destiny, temp_register );
+				if( translate )
+					mainStage.setTitle( "What now?" );
+				else
+					mainStage.setTitle( "Y ahora?" );
+				mainStage.setScene( new FinishGrid( width, height, mainStage, translate ).getMainScene() );
 			}
 		});
 
 		this.button_back = new Button( "⬅");
 		this.button_back.setMinWidth( 120 );
 		this.button_back.getStyleClass().add( "button_back" );
-		this.button_back.setVisible( false );
+		this.container_date_button.setVisible( false );
 		this.button_back.setOnAction( new EventHandler<ActionEvent>(){
 			@Override
 			public void handle( ActionEvent e ) {
+				if( translate )
+					lbl_header.setText( "Choose your plan and confirm the reservation  Total: $" + String.format("%.2f",total) );
+				else
+					lbl_header.setText( "Elije tus planes y confirma la reserva  Total: $" + String.format("%.2f",total) );
 				resultscontainer.setVisible( false );
-				button_back.setVisible( false );
+				container_date_button.setVisible( false );
+				datein_destiny.setDisable( true );
 				container.setVisible( true );
 				results.getChildren().clear();
 			}
 		});
 
-		this.datein_destiny = new DatePicker();
-		this.dateout_destiny = new DatePicker();
 
 		table_receipt = new TableView<Register>();
 		table_receipt.setMaxHeight( 300 );
@@ -221,10 +254,14 @@ public class ReceiptGrid extends GridPane {
 		this.container_button.add( this.button_accept, 4, 0 );
 		this.container.add( this.container_button, 0, 1 );
 		this.container.add( this.table_receipt, 0, 0 );
+		this.container_date_button.add( this.button_back, 0, 2 );
+		this.container_date_button.add( this.datein_destiny, 1, 2 );
+		super.add( this.lbl_header, 0, 0 );
+		super.setMargin( this.lbl_header, new Insets( 120, 0, 0, 90 ) );
 		super.add( this.container, 0, 1 );
 		super.add( this.resultscontainer, 0, 1 );
-		super.add( this.button_back, 0, 2 );
-		super.setHalignment( this.button_back, HPos.CENTER );
+		super.add( this.container_date_button, 0, 2 );
+		//super.setHalignment( this.button_back, HPos.CENTER );
 	}
 
 	public Reserve getMessage() {
@@ -248,6 +285,7 @@ public class ReceiptGrid extends GridPane {
 		this.button_destiny.setText( "Destiny" );
 		this.button_transport.setText( "Choose transport" );
 		this.button_accept.setText( "Accept" );
+		this.datein_destiny.setPromptText( "Pick a Date for event" );
 	}
 
 	public void handle_cancel( Stage mainStage ){
@@ -257,6 +295,10 @@ public class ReceiptGrid extends GridPane {
 	public void handle_food() {
 		results.getChildren().clear();
 		container.setVisible( false );	
+		if( translate )
+			lbl_header.setText( "Choos a food plan" );
+		else
+			lbl_header.setText( "Elije un plan de comida" );
 		result_food = SQLFood.searchFood( message.getIdHotel(), translate );
 		int i = 0;
 		for( FoodGrid food : result_food ) {
@@ -270,7 +312,7 @@ public class ReceiptGrid extends GridPane {
 			i++;
 		}
 		resultscontainer.setVisible( true );
-		button_back.setVisible( true );
+		container_date_button.setVisible( true );
 	} 
 
 	public void handle_reserve_food( FoodGrid results){
@@ -283,11 +325,20 @@ public class ReceiptGrid extends GridPane {
 		resultscontainer.setVisible( false );
 		container.setVisible( true );
 		button_food.setDisable( true );
-		button_back.setVisible( false );
+		container_date_button.setVisible( false );
+		total += register_food.getPrice();
+		if( translate )
+			lbl_header.setText( "Choose your plan and confirm the reservation  Total: $" + String.format("%.2f",total) );
+		else
+			lbl_header.setText( "Elije tus planes y confirma la reserva  Total: $" + String.format("%.2f",total) );
 		results.getChildren().clear();
 	}
 
 	public void handle_destiny() {
+		if( translate )
+			lbl_header.setText( "Choose a destination and a date" );
+		else
+			lbl_header.setText( "Elije un destino y una fecha" );
 		results.getChildren().clear();
 		container.setVisible( false );	
 		result_destiny = SQLDestiny.searchDestiny( message.getIdState(), translate );
@@ -304,24 +355,43 @@ public class ReceiptGrid extends GridPane {
 			i++;
 		}
 		resultscontainer.setVisible( true );
-		button_back.setVisible( true );
+		container_date_button.setVisible( true );
+		datein_destiny.setDisable( false );
 	}
 
 	public void handle_reserve_destiny( DestinyGrid results){
-		register_destiny = results.getDestiny_register();
-		register_destiny.setAdults( message.getAdults() );
-		register_destiny.setKids( message.getKids() );
-		double price_kids = register_destiny.getKids() * 0.5 * register_destiny.getPrice();
-		register_destiny.setPrice( register_destiny.getPrice() * register_destiny.getAdults() + price_kids );
-		data.add( register_destiny );
-		resultscontainer.setVisible( false );
-		container.setVisible( true );
-		button_destiny.setDisable( true );
-		button_back.setVisible( false );
-		results.getChildren().clear();
+		if( validate_destiny_date() ){
+			register_destiny = results.getDestiny_register();
+			register_destiny.setIn_date( datein_destiny.getValue() );
+			register_destiny.setAdults( message.getAdults() );
+			register_destiny.setKids( message.getKids() );
+			double price_kids = register_destiny.getKids() * 0.5 * register_destiny.getPrice();
+			register_destiny.setPrice( register_destiny.getPrice() * register_destiny.getAdults() + price_kids );
+			data.add( register_destiny );
+			resultscontainer.setVisible( false );
+			container.setVisible( true );
+			button_destiny.setDisable( true );
+			container_date_button.setVisible( false );
+			datein_destiny.setDisable( true );
+			total += register_destiny.getPrice();
+			if( translate )
+				lbl_header.setText( "Choose your plan and confirm the reservation  Total: $" + String.format("%.2f",total) );
+			else
+				lbl_header.setText( "Elije tus planes y confirma la reserva  Total: $" + String.format("%.2f",total) );
+			results.getChildren().clear();
+		}else{
+			if( translate )
+				lbl_header.setText( "Please Choose a valid date" );
+			else
+				lbl_header.setText( "Elija una fecha valida porfavor" );
+		}
 	}
 
 	public void handle_transport() {
+		if( translate )
+			lbl_header.setText( "Choose a transportation method" );
+		else
+			lbl_header.setText( "Elije un metodo de transporte" );
 		results.getChildren().clear();
 		container.setVisible( false );	
 		result_transport = SQLTransport.searchTransport( message.getIdHotel(), translate, message );
@@ -337,7 +407,7 @@ public class ReceiptGrid extends GridPane {
 			i++;
 		}
 		resultscontainer.setVisible( true );
-		button_back.setVisible( true );
+		container_date_button.setVisible( true );
 	}
 
 	public void handle_reserve_transport( TransportGrid results){
@@ -349,8 +419,24 @@ public class ReceiptGrid extends GridPane {
 		resultscontainer.setVisible( false );
 		container.setVisible( true );
 		button_transport.setDisable( true );
-		button_back.setVisible( false );
+		container_date_button.setVisible( false );
+		total += register_transport.getPrice();
+		if( translate )
+			lbl_header.setText( "Choose your plan and confirm the reservation  Total: $" + String.format("%.2f",total) );
+		else
+			lbl_header.setText( "Elije tus planes y confirma la reserva  Total: $" + String.format("%.2f",total) );
 		results.getChildren().clear();
+	}
+
+	private boolean validate_destiny_date() {
+		if( datein_destiny.getValue() != null )
+			if( datein_destiny.getValue().compareTo(message.getIn_date()) >= 0
+				&& datein_destiny.getValue().compareTo(message.getOut_date()) <= 0 )
+				return true;
+			else
+				return false;
+		else
+			return false;
 	}
 
 }
