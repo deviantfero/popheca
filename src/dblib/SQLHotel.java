@@ -71,7 +71,7 @@ public class SQLHotel {
 		try{
 			Connection c = SQLInteractor.connect();
 			c.setAutoCommit( false );
-			searchString = "select id from hotel where nomhotel=?";
+			searchString = "select id from hotel where lower(nomhotel)=?";
 			search = c.prepareStatement( searchString );
 			search.setString( 1, hotel_name );
 			ResultSet rs = search.executeQuery();

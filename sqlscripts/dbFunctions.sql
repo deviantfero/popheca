@@ -19,3 +19,8 @@ begin
 end;
 $$ language plpgsql;
 --will be useful later
+create or replace function cleanreserve() returns void as '
+	truncate table reserva cascade;
+	update habitacion set estadoReserva=0;
+	update transporte set estadoreserva=0;
+' language sql;

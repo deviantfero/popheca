@@ -83,4 +83,18 @@ public class Reserve {
 	public void setActiveUser(User activeUser) {
 		this.activeUser = activeUser;
 	}
+
+	public Register makeRegister( boolean translate ) {
+		Register nr = new Register();
+		nr.setItem( SQLRoom.getRoomCapacity( this.idRoom, translate ) );
+		nr.setDescription( SQLRoom.getRoomDesc(this.idRoom, translate ));
+		nr.setAdults( this.adults );
+		nr.setKids( this.kids );
+		nr.setPrice( SQLRoom.getRoomPrice( this.idRoom ) );
+		nr.setItemid( this.idRoom );
+		System.out.println( "HELP::" + this.idRoom );
+		nr.setIn_date( this.in_date.getValue() );
+		nr.setOut_date( this.out_date.getValue() );
+		return nr;
+	}
 }

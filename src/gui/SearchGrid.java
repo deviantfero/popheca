@@ -41,6 +41,7 @@ public class SearchGrid extends GridPane {
 	private TextField txt_amountkid;
 	private Text lbl_error;
 	private User activeUser;
+	private Stage mainStage;
 
 	private GridPane searchTerms;
 
@@ -61,6 +62,7 @@ public class SearchGrid extends GridPane {
 	public SearchGrid( int width, int height, Stage mainStage, boolean translate ) {
 		super();
 		this.mainScene = new Scene( this, width, height );
+		this.mainStage = mainStage;
 		Loader.loadCss( "search.css", this.mainScene );
 		this.top = new GridPane();
 		this.top.setHgap( 10 );
@@ -326,12 +328,27 @@ public class SearchGrid extends GridPane {
 
 	public void action_searchRoom( HotelGrid hotel ) {
 		int j = 0;
+		int persons = Integer.parseInt(txt_amount.getText()) + Integer.parseInt(txt_amountkid.getText());
 		if( true ){
 			System.out.println( hotel.getTxt_hname() );
 			results.getChildren().clear();
 			ArrayList<RoomGrid> RoomList = SQLRoom.searchRoom( hotel.getTxt_hname(),
-					translate, txt_state.getText(), message );
+					translate, txt_state.getText(), message, persons );
 			for( RoomGrid room : RoomList ) {
+				room.getButton_select().setOnAction( new EventHandler<ActionEvent>(){
+					@Override
+					public void handle( ActionEvent e ){
+						room.getRoom_message().setIdHotel( room.getCodhotel() );
+						room.getRoom_message().setIdRoom( room.getCodroom() );
+						ReceiptGrid receipt_stage = new ReceiptGrid( mainStage, translate, room.getRoom_message() );
+						receipt_stage.setMessage( room.getRoom_message() );
+						if( translate )
+							mainStage.setTitle( "Checkout" );
+						else
+							mainStage.setTitle( "Confirmar" );
+						mainStage.setScene( receipt_stage.getScene() );
+					}
+				});
 				results.add( room, 0, j );
 				j++;
 			}

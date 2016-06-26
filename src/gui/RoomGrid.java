@@ -28,6 +28,7 @@ public class RoomGrid extends GridPane {
 	private boolean translate;
 	private LocalDate rin_date;
 	private LocalDate rout_date;
+	private Reserve room_message;
 
 	private Text txt_capacity;
 	private Text txt_state;
@@ -42,6 +43,7 @@ public class RoomGrid extends GridPane {
 		super();
 		this.container = new GridPane();
 		this.translate = translate;
+		this.room_message = message;
 		this.rin_date = message.getIn_date();
 		this.rout_date = message.getOut_date();
 		ColumnConstraints column = new ColumnConstraints( 350 );
@@ -66,8 +68,8 @@ public class RoomGrid extends GridPane {
 		this.button_reserve.setOnAction( new EventHandler<ActionEvent>() {
 			@Override
 			public void handle( ActionEvent e ) {
-				message.setIdHotel( codhotel );
-				message.setIdRoom( codroom );
+				room_message.setIdHotel( codhotel );
+				room_message.setIdRoom( codroom );
 				System.out.println( "Reserve" + codhotel );
 				//SQLInteractor.makeReservation( message );
 			}
@@ -194,6 +196,13 @@ public class RoomGrid extends GridPane {
 		this.codhotel = codhotel;
 	}
 
+	/**
+	 * @return the room_message
+	 */
+	public Reserve getRoom_message() {
+		return room_message;
+	}
+
 	public String getTxt_capacity() {
 		return txt_capacity.getText();
 	}
@@ -221,6 +230,10 @@ public class RoomGrid extends GridPane {
 
 	public String getTxt_descr() {
 		return txt_descr.getText();
+	}
+
+	public Button getButton_reserve() {
+		return button_reserve;
 	}
 	
 }
