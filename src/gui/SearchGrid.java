@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.Scene;
@@ -33,6 +34,8 @@ public class SearchGrid extends GridPane {
 	private Reserve message;
 
 	private Text lbl_activeUser;
+	private Hyperlink profile;
+	private Hyperlink logout;
 	private TextField txt_state;
 	private DatePicker date_in;
 	private DatePicker date_out;
@@ -57,6 +60,8 @@ public class SearchGrid extends GridPane {
 	private GridPane results;
 	private ArrayList<HotelGrid> resultGrids;
 
+	private GridPane container_links;
+
 	private boolean translate;
 
 	public SearchGrid( int width, int height, Stage mainStage, boolean translate ) {
@@ -68,6 +73,9 @@ public class SearchGrid extends GridPane {
 		this.top.setHgap( 10 );
 		this.top.setVgap( 10 );
 		this.top.getStyleClass().add( "top" );
+		
+		this.container_links = new GridPane();
+		this.container_links.setHgap( 10 );
 
 		this.results = new GridPane();
 		this.results.setVgap( 10 );
@@ -94,6 +102,27 @@ public class SearchGrid extends GridPane {
 		this.lbl_activeUser.getStyleClass().add( "welcome_message" );
 		this.lbl_activeUser.setTextAlignment( TextAlignment.CENTER );
 		activeUser = SQLUser.getActive();
+		this.profile = new Hyperlink();
+		this.profile.setText( activeUser.getName() );
+		this.profile.setOnAction( new EventHandler<ActionEvent>(){
+			@Override
+			public void handle( ActionEvent e ) {
+				mainStage.setTitle( activeUser.getName() + " " + activeUser.getLastname() );
+				mainStage.setScene( new ProfileGrid( width, height, mainStage, translate ).getMainScene() );
+			}
+		});
+
+		this.logout = new Hyperlink();
+		this.logout.setText( "Logout" );
+		this.logout.setOnAction( new EventHandler<ActionEvent>(){
+			@Override
+			public void handle( ActionEvent e ) {
+				SQLUser.closeUsers();
+				mainStage.setTitle( "Login" );
+				mainStage.setScene( new LoginGrid( width, height, mainStage, translate ).getMainScene() );
+			}
+		});
+
 		if( activeUser != null )
 			this.lbl_activeUser.setText( "Bienvenid@, " + activeUser.getName() + " " + activeUser.getLastname() );
 		this.txt_state = new TextField();
@@ -130,6 +159,10 @@ public class SearchGrid extends GridPane {
 		this.top.add( this.txt_amount, 0, 3, 2, 1 );
 		this.top.add( this.txt_amountkid, 2, 3, 2, 1 );
 		this.top.add( this.button_search, 0, 4, 4, 1 );
+
+		this.container_links.add( this.profile, 0, 0 );
+		this.container_links.add( this.logout, 1, 0 );
+
 		super.setHalignment( this.button_search, HPos.CENTER );
 		super.setHalignment( this.lbl_activeUser, HPos.CENTER );
 		super.setHalignment( this.top, HPos.CENTER );
@@ -140,10 +173,14 @@ public class SearchGrid extends GridPane {
 		super.setMargin( this.date_in, new Insets( 0, 0, 0, 210 ) );
 		super.setMargin( this.txt_amount, new Insets( 0, 0, 0, 210 ) );
 		super.setMargin( this.button_search, new Insets( 0, 0, 0, 210 ) );
+		super.setMargin( this.container_links, new Insets( 0, 0, 20, 340 ) );
+		
 		super.add( this.top, 0, 0 );
 		super.add( this.searchTerms, 0, 1 );
 		super.add( this.resultscontainer, 0, 2 );
 		super.add( this.lbl_error, 0, 2 );
+		super.add( this.container_links, 0, 3 );
+
 		super.setMargin( this.resultscontainer, new Insets( -90, 420, 20, 100 ) );
 		super.setMargin( this.top, new Insets( 120, 0, 0, 0 ) );
 		super.setHalignment( this.searchTerms, HPos.CENTER );

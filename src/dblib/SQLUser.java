@@ -88,6 +88,73 @@ public class SQLUser {
 			System.err.println( "SQL::Error updating state" );
 		}
 	}
+
+	public static void setName( String name, boolean lastname ) {
+		try{
+			Connection c = SQLInteractor.connect();
+			PreparedStatement setName = null;
+			User activeUser = SQLUser.getActive();
+			String updateString = null;
+			if( lastname )
+				updateString = "UPDATE usuario SET apeusuario=? WHERE cnxusuario=true and idusuario=?";
+			else
+				updateString = "UPDATE usuario SET nomusuario=? WHERE cnxusuario=true and idusuario=?";
+			setName = c.prepareStatement( updateString );
+			setName.setString( 1, name );
+			setName.setInt( 2, activeUser.getId() );
+			setName.executeUpdate();
+			c.close();
+			if( lastname )
+				System.out.println( "SQL::Apellido cambiado con exito" );
+			else
+				System.out.println( "SQL::Nombre cambiado con exito" );
+		}catch( Exception e ) {
+			System.err.println( e.getMessage() );
+			System.err.println( "SQL::Error updating state" );
+		}
+	}
+
+	public static void setEmail( String email ) {
+		try{
+			Connection c = SQLInteractor.connect();
+			PreparedStatement setEmail = null;
+			User activeUser = SQLUser.getActive();
+			String updateString = "UPDATE usuario SET emailusuario=? WHERE cnxusuario=true and idusuario=?";
+			setEmail = c.prepareStatement( updateString );
+			setEmail.setString( 1, email );
+			setEmail.setInt( 2, activeUser.getId() );
+			setEmail.executeUpdate();
+			c.close();
+			System.out.println( "SQL::Email cambiado con exito" );
+		}catch( Exception e ) {
+			System.err.println( e.getMessage() );
+			System.err.println( "SQL::Error updating state" );
+		}
+	}
+
+	public static boolean setPass( String oldPass, String newPass ) {
+		boolean returnval = false;
+		try{
+			Connection c = SQLInteractor.connect();
+			PreparedStatement setPass = null;
+			User activeUser = SQLUser.getActive();
+			String updateString = "UPDATE usuario SET passusuario=? WHERE passusuario=? and idusuario=?";
+			setPass = c.prepareStatement( updateString );
+			setPass.setString( 1, MD5.encrypt(newPass) );
+			setPass.setString( 2, MD5.encrypt(oldPass) );
+			setPass.setInt( 3, activeUser.getId() );
+			if( SQLUser.searchUser(activeUser.getEmail(), oldPass ) ){
+				setPass.executeUpdate();
+				System.out.println( "SQL::Pass cambiado con exito" );
+				returnval = true;
+			}
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( e.getMessage() );
+			System.err.println( "SQL::Error updating state" );
+		}
+		return returnval;
+	}
 	
 	public static void closeUsers() {
 		try{

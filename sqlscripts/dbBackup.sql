@@ -45,6 +45,21 @@ $$;
 ALTER FUNCTION public.cleanreserve() OWNER TO fernando;
 
 --
+-- Name: deletereserve(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: fernando
+--
+
+CREATE FUNCTION deletereserve(codreservad integer, codhabitaciond integer, codtransported integer) RETURNS void
+    LANGUAGE sql
+    AS $$
+	delete from reserva cascade where codreserva=codreservad;
+	update habitacion set estadoReserva=0 where codhabitacion=codhabitaciond;
+	update transporte set estadoreserva=0 where codtransporte=codtransported;
+$$;
+
+
+ALTER FUNCTION public.deletereserve(codreservad integer, codhabitaciond integer, codtransported integer) OWNER TO fernando;
+
+--
 -- Name: getroom_reserve(integer); Type: FUNCTION; Schema: public; Owner: fernando
 --
 
@@ -587,8 +602,6 @@ COPY estadoreserva (estadoreserva, estadoactual) FROM stdin;
 COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estadoreserva, idhotel, imghabitacion, dethabitacioneng) FROM stdin;
 17	1	18.0100000000000016	no hay descripcion	0	18	\N	theres none
 2	1	18.9400000000000013	no hay descripcion	0	18	\N	theres none
-4	1	80.3599999999999994	no hay descripcion	0	17	\N	theres none
-21	2	49.2899999999999991	no hay descripcion	0	17	\N	theres none
 42	2	42.3500000000000014	no hay descripcion	0	17	\N	theres none
 37	2	27.3000000000000007	no hay descripcion	0	17	\N	theres none
 7	1	33.8500000000000014	no hay descripcion	0	13	\N	theres none
@@ -597,7 +610,6 @@ COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estador
 1	2	72.3299999999999983	no hay descripcion	0	14	\N	theres none
 3	1	19.5500000000000007	no hay descripcion	0	14	\N	theres none
 41	3	90.4000000000000057	no hay descripcion	0	18	\N	theres none
-14	1	77.4300000000000068	no hay descripcion	0	17	\N	theres none
 5	2	10.4800000000000004	no hay descripcion	0	24	\N	theres none
 6	3	20.879999999999999	no hay descripcion	0	24	\N	theres none
 26	1	75.7000000000000028	no hay descripcion	0	13	\N	theres none
@@ -633,8 +645,11 @@ COPY habitacion (codhabitacion, maxperson, prchabitacion, dethabitacion, estador
 28	2	29.9100000000000001	no hay descripcion	0	22	\N	theres none
 29	3	77.2199999999999989	no hay descripcion	0	24	\N	theres none
 30	1	67.2199999999999989	no hay descripcion	0	24	\N	theres none
-46	1	39.4500000000000028	no hay descripcion	0	17	\N	theres none
 27	1	69.7999999999999972	no hay descripcion	0	18	\N	theres none
+14	1	77.4300000000000068	no hay descripcion	0	17	\N	theres none
+4	1	80.3599999999999994	no hay descripcion	0	17	\N	theres none
+21	2	49.2899999999999991	no hay descripcion	0	17	\N	theres none
+46	1	39.4500000000000028	no hay descripcion	0	17	\N	theres none
 \.
 
 
@@ -735,7 +750,7 @@ COPY reserva (codreserva, fechainicior, fechafinr, numadultos, numninnos, idfact
 -- Name: reserva_codreserva_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('reserva_codreserva_seq', 122, true);
+SELECT pg_catalog.setval('reserva_codreserva_seq', 128, true);
 
 
 --
@@ -788,7 +803,6 @@ Hummer	6	0	23	\N	199	256.769999999999982
 Yamaha	1	0	13	\N	200	267.910000000000025
 Hummer	6	0	17	\N	104	422.70999999999998
 Mitsubishi	4	0	18	\N	102	377.519999999999982
-Chrysler	4	0	17	\N	138	440.399999999999977
 Hummer	6	0	23	\N	129	790.970000000000027
 Yamaha	1	0	19	\N	130	308.410000000000025
 Yamaha	1	0	16	\N	135	872.990000000000009
@@ -819,8 +833,9 @@ Chrysler	4	0	16	\N	183	257.45999999999998
 Hummer	6	0	21	\N	184	766.370000000000005
 Yamaha	1	0	13	\N	185	855.159999999999968
 Toyota	2	0	21	\N	186	800.129999999999995
-Chrysler	4	0	17	\N	128	851.580000000000041
 Hummer	6	0	17	\N	134	733.590000000000032
+Chrysler	4	0	17	\N	128	851.580000000000041
+Chrysler	4	0	17	\N	138	440.399999999999977
 \.
 
 
@@ -837,6 +852,7 @@ SELECT pg_catalog.setval('transporte_codtransporte_seq', 200, true);
 
 COPY usuario (idusuario, nomusuario, apeusuario, emailusuario, passusuario, cnxusuario, rol) FROM stdin;
 1	root	admin	root@admin.com	63a9f0ea7bb98050796b649e85481845	f	0
+3	Regina	Viscarra	viscarra.regina@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
 2	Fernando	Vasquez	fmorataya.04@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
 \.
 
@@ -845,7 +861,7 @@ COPY usuario (idusuario, nomusuario, apeusuario, emailusuario, passusuario, cnxu
 -- Name: usuario_idusuario_seq; Type: SEQUENCE SET; Schema: public; Owner: fernando
 --
 
-SELECT pg_catalog.setval('usuario_idusuario_seq', 2, true);
+SELECT pg_catalog.setval('usuario_idusuario_seq', 3, true);
 
 
 --
