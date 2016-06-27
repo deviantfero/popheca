@@ -131,6 +131,12 @@ public class DestinyGrid extends GridPane {
 		return button_reserve;
 	}
 
+	/**
+	 *
+	 *
+	 * @param path Ingresa el "path" de la imagen que se
+	 * mostrara con los resultados
+	 */
 	public void setImageRoom( String path ) {
 		this.img_destiny = new Image( path, 90, 150, true, false );
 		this.view_destiny.setImage( this.img_destiny );

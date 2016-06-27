@@ -70,11 +70,23 @@ public class AdminGrid extends GridPane {
 		super.add( this.frame, 0, 1 );
 		super.setMargin( this.frame, new Insets( 230, 300, 100, 310 ));
 
-		mainStage.setScene( this.mainScene );
-		mainStage.show();
+		if( translate )
+			this.translate_admin();
+
 	}
 
+	/**
+	 *
+	 *
+	 * @return mainScene para ponerlo en el stage principal
+	 */
 	public Scene getMainScene() {
 		return mainScene;
+	}
+
+	private void translate_admin() {
+		this.button_search.setText( "Make reservation" );
+		this.button_manageUsers.setText( "Edit users" );
+		this.lbl_welcomeMessage.setText( "Welcome" );
 	}
 }
