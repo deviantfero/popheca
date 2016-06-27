@@ -25,8 +25,7 @@ public class SQLRoom {
 			search.setInt( 2, amount );
 			ResultSet rs = search.executeQuery();
 			while( rs.next() ) {
-				String image_path = new String( "/gui/styles/img/" + state.toLowerCase() 
-												+ "/" + rs.getString( "nomhotel" ) 
+				String image_path = new String( "/gui/styles/img/any/" + rs.getString( "nomhotel" ) 
 												+ "/" + rs.getInt( "maxperson" ) + ".jpg");
 
 				RoomGrid result = new RoomGrid( translate, message );

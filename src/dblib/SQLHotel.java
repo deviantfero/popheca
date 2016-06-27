@@ -27,8 +27,7 @@ public class SQLHotel {
 			ResultSet rs = search.executeQuery();
 			while( rs.next() ) {
 				HotelGrid result = new HotelGrid( translate );
-				String path = new String( "/gui/styles/img/" +
-							state.toLowerCase() + "/" +
+				String path = new String( "/gui/styles/img/any/" +
 							rs.getString( "nomhotel" ) + "/0.jpg" );
 				String pathr = new String( "/gui/styles/img/" + rs.getInt( "lvlhotel" ) + ".png");
 				result.setTxt_state( state );
