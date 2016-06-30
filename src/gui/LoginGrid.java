@@ -77,7 +77,7 @@ public class LoginGrid extends GridPane {
 						User activeUser = new User();
 						activeUser = SQLUser.getActive();
 						lbl_error.setText( "Login!" );
-						if( activeUser.getRole() == 0 ){
+						if( activeUser.getRole() == 0 || activeUser.getRole() == 2 ){
 							if( button_translate.getText().equals( "Español" ) ) {
 								mainStage.setTitle( "ADMIN" );
 								mainStage.setScene( new AdminGrid( width, height, mainStage, true ).getMainScene() );
@@ -113,10 +113,10 @@ public class LoginGrid extends GridPane {
 				System.out.println( "Register..." );
 				if( button_translate.getText().equals( "Español" ) ) {
 					mainStage.setTitle( "Register" );
-					mainStage.setScene( new RegisterGrid( width, height, mainStage, true ).getMainScene() );
+					mainStage.setScene( new RegisterGrid( width, height, mainStage, true, false ).getMainScene() );
 				}else{
 					mainStage.setTitle( "Registrar" );
-					mainStage.setScene( new RegisterGrid( width, height, mainStage, false ).getMainScene() );
+					mainStage.setScene( new RegisterGrid( width, height, mainStage, false, false ).getMainScene() );
 				}
 			}
 		});
@@ -166,7 +166,10 @@ public class LoginGrid extends GridPane {
 	private boolean validate_login() {
 		if( this.txt_email.getText().matches( "^[a-zA-Z0-9]+([ _-]|\\.)?[A-Za-z0-9]+@[a-z]+\\.[a-z\\.]+" ) 
 				&& this.txt_password.getText().matches(".{4,100}")){
-			this.lbl_error.setText( MD5.encrypt(txt_password.getText()) );
+			if( this.button_translate.getText().equals( "Español" ) )
+				this.lbl_error.setText( "Try again" );
+			else
+				this.lbl_error.setText( "Intente denuevo" );
 			return true;
 		}else
 			return false;

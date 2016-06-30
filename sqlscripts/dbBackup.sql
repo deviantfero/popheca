@@ -851,9 +851,9 @@ SELECT pg_catalog.setval('transporte_codtransporte_seq', 200, true);
 --
 
 COPY usuario (idusuario, nomusuario, apeusuario, emailusuario, passusuario, cnxusuario, rol) FROM stdin;
-1	root	admin	root@admin.com	63a9f0ea7bb98050796b649e85481845	f	0
 3	Regina	Viscarra	viscarra.regina@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
 2	Fernando	Vasquez	fmorataya.04@gmail.com	cbb4be0cdf250620bc34d885485d6d08	f	1
+1	root	admin	root@admin.com	63a9f0ea7bb98050796b649e85481845	f	2
 \.
 
 

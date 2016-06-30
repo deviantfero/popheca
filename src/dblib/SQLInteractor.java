@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 import data.Reserve;
 import data.Register;
+import data.State;
 
 public class SQLInteractor {
 
@@ -251,4 +252,94 @@ public class SQLInteractor {
 		}
 		return out_dates;
 	}
+
+	public static ArrayList<State> adminSearchState( String statements, int opt ){
+		ArrayList<State> resultList = new ArrayList<State>();
+		PreparedStatement search = null;
+		String searchString = null;
+		int num = 0;
+		if( statements.matches("[0-9]*" ))
+			num = Integer.parseInt( statements );
+		try{
+			Connection c = SQLInteractor.connect();
+			switch( opt ) {
+				case 0:
+					if( statements.matches("[a-zA-Z0-9]+"))
+						searchString = "select * from estado where lower(nomestado) like '%"+statements.toLowerCase()+"%'";
+					else
+						searchString = "select * from estado";
+					search = c.prepareStatement( searchString );
+					break;
+				case 1:
+					searchString = "select * from estado where idestado=?";
+					search = c.prepareStatement( searchString );
+					search.setInt( 1, num );
+					break;
+			}
+			ResultSet rs = search.executeQuery();
+			while( rs.next() ) {
+				State result = new State();
+				result.setIdestado( rs.getInt( "idestado" ) );
+				result.setNomestado( rs.getString( "nomestado" ) );
+				resultList.add( result );
+			}
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Some error ocurred while searching for states" );
+			System.err.println( e.getMessage() );
+			return null;
+		}
+		return resultList;
+	}
+
+	public static void deleteState( int id ) {
+		String searchString = null;
+		PreparedStatement search = null;
+		try{
+			Connection c = SQLInteractor.connect();
+			c.setAutoCommit( false );
+			searchString = "delete from estado where idestado=?";
+			search = c.prepareStatement( searchString );
+			search.setInt( 1, id );
+			search.executeUpdate();
+			c.commit();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Could not find such state" );
+		}
+	}
+
+	public static void addState( String namestate ) {
+		String searchString = null;
+		PreparedStatement search = null;
+		try{
+			Connection c = SQLInteractor.connect();
+			c.setAutoCommit( false );
+			searchString = "insert into estado (nomestado) values ( ? )";
+			search = c.prepareStatement( searchString );
+			search.setString( 1, namestate );
+			search.executeUpdate();
+			c.commit();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Could not add state" );
+		}
+	}
+
+	public static void modifyState( State new_values ) {
+		String searchString = null;
+		PreparedStatement search = null;
+		try{
+			Connection c = SQLInteractor.connect();
+			c.setAutoCommit( false );
+			searchString = "update estado set nomestado=? where idestado=?";
+			search = c.prepareStatement( searchString );
+			search.setString( 1, new_values.getNomestado() );
+			search.setInt( 2, new_values.getIdestado() );
+			search.executeUpdate();
+			c.commit();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Could not find such estado" );
+			System.err.println( e.getMessage() );
+		}
+	}
+
 }

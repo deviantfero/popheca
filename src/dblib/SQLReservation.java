@@ -9,7 +9,7 @@ import gui.ReservationGrid;
 import data.User;
 
 public class SQLReservation {
-	public static ArrayList<ReservationGrid> searchReservation( boolean translate ) {
+	public static ArrayList<ReservationGrid> searchReservation( boolean translate, User adminSent ) {
 		ArrayList<ReservationGrid> resultList = new ArrayList<ReservationGrid>();
 		PreparedStatement search = null;
 		String searchString = null;
@@ -17,7 +17,11 @@ public class SQLReservation {
 			+ "T.codtransporte, E.nombreentrada from reserva as R, hotel as H, reservaxhabitacion as RR, transporte as T, entrada as E, "
 			+ "reservaxentrada as ER where idusuario=? and R.idhotel=H.idhotel and RR.codreserva=R.codreserva and R.codtransporte="
 			+ "T.codtransporte and R.codreserva=ER.codreserva and ER.codentrada=E.codentrada";
-		User activeUser = SQLUser.getActive();
+		User activeUser = null;
+		if( adminSent != null )
+			activeUser = adminSent;
+		else
+			activeUser = SQLUser.getActive();
 		try{
 			Connection c = SQLInteractor.connect();
 			c.setAutoCommit( false );

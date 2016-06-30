@@ -62,10 +62,15 @@ public class ProfileGrid extends GridPane {
 	private Button button_cancelPassword;
 	private PasswordField txt_oldPass;
 	private PasswordField txt_newPass;
+	private int offset=0;
+
+	private TextField txt_role;
+	private Button button_role;
+	private User secretUser;
 
 	private boolean translatel;
 
-	public ProfileGrid( int width, int height, Stage mainStage, boolean translate ) {
+	public ProfileGrid( int width, int height, Stage mainStage, boolean translate, User adminSent ) {
 		super();
 		this.mainScene = new Scene( this, width, height );
 		this.translatel = translate;
@@ -105,6 +110,42 @@ public class ProfileGrid extends GridPane {
 		this.txt_oldPass = new PasswordField();
 		this.txt_oldPass.setPromptText( "Contraseña" );
 		this.txt_oldPass.setMaxWidth( 115 );
+
+		this.txt_role = new TextField();
+		this.txt_role.setMaxWidth( 115 );
+		this.txt_role.setVisible( false );
+
+		this.button_role = new Button( "Cambiar" );
+		this.button_role.setVisible( false );
+		this.button_role.setOnAction( new EventHandler<ActionEvent>(){
+			@Override
+			public void handle( ActionEvent e ) {
+				if( txt_role.getText().matches("[01]")){
+					SQLUser.setRole( Integer.parseInt( txt_role.getText() ), adminSent );
+					adminSent.setRole( Integer.parseInt( txt_role.getText() ) );
+					mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel, adminSent ).getMainScene() );
+				}
+			}
+		});
+
+		if( translatel ){
+			this.button_role.setText( "Change" );
+			this.txt_role.setPromptText( "Modify role 0-1" );
+		}
+		else{
+			this.txt_role.setPromptText( "Modifique el rol 0-1" );
+		}
+
+		this.secretUser = SQLUser.getActive();
+
+		if( adminSent != null && adminSent.getRole() != 2){
+			this.txt_oldPass.setDisable( true );
+			if( this.secretUser.getRole() == 2 ){
+				this.offset = 1;
+				this.txt_role.setVisible( true );
+				this.button_role.setVisible( true );
+			}
+		}
 		this.button_changePassword = new Button( "Cambiar" );
 		this.button_changePassword.setOnAction( new EventHandler<ActionEvent>(){
 			@Override
@@ -113,6 +154,8 @@ public class ProfileGrid extends GridPane {
 					if( SQLUser.setPass( txt_oldPass.getText(), txt_newPass.getText() ) ){
 						SQLUser.closeUsers();
 						mainStage.setScene( new LoginGrid( width, height, mainStage, translatel ).getMainScene() );
+					}else if( adminSent != null && adminSent.getRole() != 2){
+						SQLUser.adminsetPass( txt_newPass.getText(), adminSent );
 					}
 			}
 		});
@@ -132,7 +175,10 @@ public class ProfileGrid extends GridPane {
 			}
 		});
 
-		activeUser = SQLUser.getActive();
+		if( adminSent != null )
+			activeUser = adminSent;
+		else
+			activeUser = SQLUser.getActive();
 
 		this.lbl_labeln = new Text( "Nombre:" );
 		this.lbl_labeln.setId( "lbl_register" );
@@ -211,7 +257,7 @@ public class ProfileGrid extends GridPane {
 					public void handle( ActionEvent e ) {
 						if(txt_name.getText().matches( "[A-Za-z]{2,15}" )){
 							SQLUser.setName( txt_name.getText(), false );
-							mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel ).getMainScene() );
+							mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel, activeUser ).getMainScene() );
 						}else{
 							if( translatel )
 								txt_name.setText( "Not Valid" );
@@ -242,7 +288,7 @@ public class ProfileGrid extends GridPane {
 					public void handle( ActionEvent e ) {
 						if(txt_lastname.getText().matches( "[A-Za-z]{2,15}" )){
 							SQLUser.setName( txt_lastname.getText(), true );
-							mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel ).getMainScene() );
+							mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel, activeUser ).getMainScene() );
 						}else{
 							if( translatel )
 								txt_lastname.setText( "Not Valid" );
@@ -273,7 +319,7 @@ public class ProfileGrid extends GridPane {
 						if(txt_email.getText().matches( "^[a-zA-Z0-9]+([ _-]|\\.)?[A-Za-z0-9]+@[a-z]+\\.[a-z\\.]+" )
 							&& !SQLUser.searchUser( txt_email.getText() ) ){
 							SQLUser.setEmail( txt_email.getText() );
-							mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel ).getMainScene() );
+							mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel, activeUser ).getMainScene() );
 						}else{
 							if( translatel )
 								txt_email.setText( "Not Valid" );
@@ -291,7 +337,7 @@ public class ProfileGrid extends GridPane {
 		this.button_cancel.setOnAction( new EventHandler<ActionEvent>(){
 			@Override
 			public void handle( ActionEvent e ) {
-				mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel ).getMainScene() );
+				mainStage.setScene( new ProfileGrid( width, height, mainStage, translatel, activeUser ).getMainScene() );
 			}
 		});
 
@@ -313,7 +359,7 @@ public class ProfileGrid extends GridPane {
 					mainStage.setTitle( "Reservations" );
 				else
 					mainStage.setTitle( "Reservaciones" );
-				mainStage.setScene( new DelGrid( width, height, mainStage, translatel ).getMainScene() );
+				mainStage.setScene( new DelGrid( width, height, mainStage, translatel, activeUser ).getMainScene() );
 			}
 		});
 
@@ -356,6 +402,8 @@ public class ProfileGrid extends GridPane {
 		this.container_password.add( this.txt_newPass, 1, 0 );
 		this.container_password.add( this.button_changePassword, 2, 0 );
 		this.container_password.add( this.button_cancelPassword, 3, 0 );
+		this.container_password.add( this.button_role, 2, 0+this.offset );
+		this.container_password.add( this.txt_role, 1, 0+this.offset );
 
 		this.container_phase1.add( this.container, 0, 1 );
 		this.container_phase1.add( this.container_button, 0, 2 );
@@ -380,7 +428,7 @@ public class ProfileGrid extends GridPane {
 	private void setRolelbl( int role ){
 		switch( role ) {
 			case 0:
-				this.lbl_role = new Text( "Super admin" );
+				this.lbl_role = new Text( "Admin" );
 				break;
 			case 1:
 				if( this.translatel )
@@ -388,11 +436,8 @@ public class ProfileGrid extends GridPane {
 				else
 					this.lbl_role = new Text( "User" );
 				break;
-			case 3:
-				if( this.translatel )
-					this.lbl_role = new Text( "Super user" );
-				else
-					this.lbl_role = new Text( "Super usuario" );
+			case 2:
+				this.lbl_role = new Text( "Super admin" );
 				break;
 
 		}

@@ -38,7 +38,7 @@ public class RegisterGrid extends GridPane {
 	private PasswordField txt_newPass; 
 	private PasswordField txt_newPassConfirm; 
 
-	public RegisterGrid( int width, int height, Stage mainStage, boolean translate ) {
+	public RegisterGrid( int width, int height, Stage mainStage, boolean translate, boolean admin ) {
 		super();
 		this.translate = translate;
 		this.form = new GridPane();
@@ -73,13 +73,27 @@ public class RegisterGrid extends GridPane {
 		this.button_back = new Button( "⬅");
 		this.button_back.setMinWidth( 120 );
 		this.button_back.getStyleClass().add( "button_back" );
-		this.button_back.setOnAction( new EventHandler<ActionEvent>() {
-			@Override
-			public void handle( ActionEvent e ) {
-				mainStage.setTitle( "Login" );
+
+		if( !admin ){
+			this.button_back.setOnAction( new EventHandler<ActionEvent>() {
+				@Override
+				public void handle( ActionEvent e ) {
+					mainStage.setTitle( "Login" );
 					mainStage.setScene( new LoginGrid( width, height, mainStage, translate ).getMainScene() );
-			}
-		});
+				}
+			});
+		}else{
+			this.button_back.setOnAction( new EventHandler<ActionEvent>() {
+				@Override
+				public void handle( ActionEvent e ) {
+					if( translate )
+						mainStage.setTitle( "ADMIN USER" );
+					else
+						mainStage.setTitle( "ADMIN USUARIO" );
+					mainStage.setScene( new AdminUserGrid(width, height, mainStage, translate ).getMainScene() );
+				}
+			});
+		}
 
 		this.button_submit = new Button( "Confirmar" );
 		this.button_submit.setMinWidth( 190 );
@@ -117,9 +131,6 @@ public class RegisterGrid extends GridPane {
 		super.setMargin( this.lbl_error, new Insets( 100, 0, 0, 5 ) );
 		super.setMargin( this.form, new Insets( 95, 500, 0, 220 ) );
 		super.setHalignment( this.lbl_error, HPos.CENTER );
-
-		mainStage.setScene( mainScene );
-		mainStage.show();
 	}
 
 	public Scene getMainScene() {

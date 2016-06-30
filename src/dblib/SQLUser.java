@@ -155,7 +155,45 @@ public class SQLUser {
 		}
 		return returnval;
 	}
+
+	public static void setRole( int new_role, User adminSent ) {
+		try{
+			Connection c = SQLInteractor.connect();
+			PreparedStatement setPass = null;
+			String updateString = "UPDATE usuario SET rol=? WHERE idusuario=?";
+			setPass = c.prepareStatement( updateString );
+			setPass.setInt( 1, new_role );
+			setPass.setInt( 2, adminSent.getId() );
+			setPass.executeUpdate();
+			System.out.println( "SQL::Rol cambiado con exito" );
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( e.getMessage() );
+			System.err.println( "SQL::Error updating state" );
+		}
+	}
 	
+	public static boolean adminsetPass( String newPass, User adminSent ) {
+		boolean returnval = false;
+		try{
+			Connection c = SQLInteractor.connect();
+			PreparedStatement setPass = null;
+			User activeUser = adminSent;
+			String updateString = "UPDATE usuario SET passusuario=? WHERE idusuario=?";
+			setPass = c.prepareStatement( updateString );
+			setPass.setString( 1, MD5.encrypt(newPass) );
+			setPass.setInt( 2, activeUser.getId() );
+			setPass.executeUpdate();
+			System.out.println( "SQL::Pass cambiado con exito" );
+			returnval = true;
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( e.getMessage() );
+			System.err.println( "SQL::Error updating state" );
+		}
+		return returnval;
+	}
+
 	public static void closeUsers() {
 		try{
 			Connection c = SQLInteractor.connect();
@@ -222,4 +260,82 @@ public class SQLUser {
 			return null;
 		}
 	}
+
+	public static void deleteUser( int id ) {
+		String searchString = null;
+		PreparedStatement search = null;
+		try{
+			Connection c = SQLInteractor.connect();
+			c.setAutoCommit( false );
+			searchString = "delete from usuario where idusuario=?";
+			search = c.prepareStatement( searchString );
+			search.setInt( 1, id );
+			search.executeUpdate();
+			c.commit();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Could not find such user" );
+		}
+	}
+
+	public static ArrayList<User> adminSearchUser( String statements, boolean translate, int opt ){
+		ArrayList<User> resultList = new ArrayList<User>();
+		PreparedStatement search = null;
+		String searchString = null;
+		int num = 0;
+		if( statements.matches("[0-9]*" ))
+			num = Integer.parseInt( statements );
+		try{
+			Connection c = SQLInteractor.connect();
+			switch( opt ) {
+				case 0:
+					if( statements.matches("[a-zA-Z0-9]+"))
+						searchString = "select * from usuario where lower(nomusuario) like '%"+statements.toLowerCase()+"%'";
+					else
+						searchString = "select * usuario hotel";
+					search = c.prepareStatement( searchString );
+					break;
+				case 1:
+					searchString = "select * from usuario where idusuario=?";
+					search = c.prepareStatement( searchString );
+					search.setInt( 1, num );
+					break;
+				case 2:
+					if( statements.matches("[a-zA-Z0-9]+"))
+						searchString = "select * from usuario where lower(apeusuario) like '%"+statements.toLowerCase()+"%'";
+					else
+						searchString = "select * from usuario";
+					search = c.prepareStatement( searchString );
+					break;
+				case 3:
+					if( statements.matches("[a-zA-Z0-9]+"))
+						searchString = "select * from usuario where lower(emailusuario) like '%"+statements.toLowerCase()+"%'";
+					else
+						searchString = "select * from usuario";
+					search = c.prepareStatement( searchString );
+					break;
+				case 4:
+					searchString = "select * from usuario where rol=?";
+					search = c.prepareStatement( searchString );
+					search.setInt( 1, num );
+					break;
+			}
+			ResultSet rs = search.executeQuery();
+			while( rs.next() ) {
+				User result = new User();
+				result.setId( rs.getInt( "idusuario" ) );
+				result.setName( rs.getString( "nomusuario" ) );
+				result.setLastname( rs.getString( "apeusuario" ) );
+				result.setRole( rs.getInt( "rol" ) );
+				result.setEmail( rs.getString( "emailusuario" ) );
+				resultList.add( result );
+			}
+			c.close();
+		}catch( Exception e ) {
+			System.err.println( "SQL::Some error ocurred while searching for hotels" );
+			System.err.println( e.getMessage() );
+			return null;
+		}
+		return resultList;
+	}
+
 }

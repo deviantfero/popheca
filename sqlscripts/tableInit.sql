@@ -14,7 +14,6 @@ create table Reserva(
 	fechaFinR date not null,
 	numAdultos int not null,
 	numNinnos int,
-	idFactura int not null,
 	idUsuario int not null,
 	idEstado int not null,
 	codTransporte int,
@@ -30,7 +29,6 @@ create table Entrada(
 	tipoEntradaEng varchar (50) not null,
 	precioEntrada float not null,
 	idEstado int not null,
-	IMGEntrada varchar (50)
 );
 
 create table ReservaXEntrada(
@@ -60,7 +58,6 @@ create table Hotel(
 	descrHotelEng varchar(300) not null default 'n/a',
 	direcHotel varchar(100) not null default 'n/a',
 	idEstado int not null,
-	IMGHotel varchar (50)
 );
 
 alter table Hotel add foreign key (idEstado) references Estado on delete cascade;
@@ -74,7 +71,6 @@ create table Habitacion (
 	detHabitacioneng varchar(250) not null default 'n/a',
 	EstadoReserva int not null,
 	idHotel int not null,
-	IMGHabitacion varchar (50)
 );
 
 alter table Habitacion add foreign key (idHotel) references Hotel on delete cascade;
@@ -86,7 +82,6 @@ create table PlanComida(
 	descrPlaneng varchar(150) not null default 'there is none',
 	precioPlan float not null default 0,
 	idHotel int not null,
-	IMGPlan varchar (50)
 );
 alter table PlanComida add foreign key (idHotel) references Hotel on delete cascade;
 
@@ -97,7 +92,6 @@ create table Transporte(
 	prectransporte float not null default 0.00,
 	EstadoReserva int not null,
 	idHotel int not null,
-	IMGTransporte varchar(50)
 );
 
 alter table Transporte add foreign key (idHotel) references Hotel on delete cascade;
@@ -156,4 +150,4 @@ Alter table ReservaXPlan add foreign key (codPlan) references PlanComida on dele
 --drop table Estado;
 --drop table Hotel;
 
-insert into Usuario (nomUsuario, apeUsuario, emailUsuario, passUsuario, cnxUsuario, rol ) values('root', 'admin', 'root@admin.com','63a9f0ea7bb98050796b649e85481845',false, 0 );
+insert into Usuario (nomUsuario, apeUsuario, emailUsuario, passUsuario, cnxUsuario, rol ) values('root', 'admin', 'root@admin.com','63a9f0ea7bb98050796b649e85481845',false, 2 );

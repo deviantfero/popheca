@@ -2,14 +2,12 @@ package gui;
 
 import gui.proc.Loader;
 import javafx.event.ActionEvent;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.event.EventHandler;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.text.*;
 import javafx.scene.control.Hyperlink;
 import javafx.stage.Stage;
@@ -29,7 +27,9 @@ public class DelGrid extends GridPane {
 	private ArrayList<ReservationGrid> resultGrids;
 	private Hyperlink back;
 
-	public DelGrid( int width, int height, Stage mainStage, boolean translate ) {
+	private User activeUser;
+
+	public DelGrid( int width, int height, Stage mainStage, boolean translate, User adminSent ) {
 		super();
 		this.mainScene = new Scene( this, width, height );
 		Loader.loadCss( "search.css", this.mainScene );
@@ -46,19 +46,23 @@ public class DelGrid extends GridPane {
 			this.back.setText( "Back" );
 		else
 			this.back.setText( "Atras" );
-		User activeUser = SQLUser.getActive();
+
+		if( adminSent != null )
+			activeUser = adminSent;
+		else
+			activeUser = SQLUser.getActive();
 		this.back.setOnAction( new EventHandler<ActionEvent>() {
 			@Override
 			public void handle( ActionEvent e ) {
 				mainStage.setTitle( activeUser.getName() + " " + activeUser.getLastname() );
-				mainStage.setScene( new ProfileGrid( width, height, mainStage, translate ).getMainScene() );
+				mainStage.setScene( new ProfileGrid( width, height, mainStage, translate, activeUser ).getMainScene() );
 			}
 		});
 
 		this.center = new GridPane();
 
 		this.results = new GridPane();
-		this.resultGrids = SQLReservation.searchReservation( translate );
+		this.resultGrids = SQLReservation.searchReservation( translate, adminSent );
 		super.setMargin( this.back, new Insets( 130, 0, 0, 410 ) );
 		this.back.setTextAlignment( TextAlignment.CENTER );
 		if( this.resultGrids.size() < 1 ){

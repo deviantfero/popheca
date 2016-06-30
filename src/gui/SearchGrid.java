@@ -108,7 +108,7 @@ public class SearchGrid extends GridPane {
 			@Override
 			public void handle( ActionEvent e ) {
 				mainStage.setTitle( activeUser.getName() + " " + activeUser.getLastname() );
-				mainStage.setScene( new ProfileGrid( width, height, mainStage, translate ).getMainScene() );
+				mainStage.setScene( new ProfileGrid( width, height, mainStage, translate, null ).getMainScene() );
 			}
 		});
 
@@ -173,7 +173,8 @@ public class SearchGrid extends GridPane {
 		super.setMargin( this.date_in, new Insets( 0, 0, 0, 210 ) );
 		super.setMargin( this.txt_amount, new Insets( 0, 0, 0, 210 ) );
 		super.setMargin( this.button_search, new Insets( 0, 0, 0, 210 ) );
-		super.setMargin( this.container_links, new Insets( 0, 0, 20, 340 ) );
+		super.setMargin( this.container_links, new Insets( 20, 0, 20, 30 ) );
+		super.setHalignment( this.container_links, HPos.CENTER );
 		
 		super.add( this.top, 0, 0 );
 		super.add( this.searchTerms, 0, 1 );
