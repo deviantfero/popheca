@@ -145,6 +145,8 @@ public class ProfileGrid extends GridPane {
 				this.txt_role.setVisible( true );
 				this.button_role.setVisible( true );
 			}
+		}else{
+			this.txt_oldPass.setDisable( false );
 		}
 		this.button_changePassword = new Button( "Cambiar" );
 		this.button_changePassword.setOnAction( new EventHandler<ActionEvent>(){
