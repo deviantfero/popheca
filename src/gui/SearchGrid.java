@@ -250,7 +250,7 @@ public class SearchGrid extends GridPane {
 		if( this.txt_amountkid.getText().equals("") )
 			this.txt_amountkid.setText( "0" );
 		if( this.txt_state.getText().equals("") || this.txt_state.getText().length() > 15 )
-			this.txt_state.setText( "Any" );
+			this.txt_state.setText( "Florida" );
 
 		if( translate ){
 			this.lbl_indate.setText( "From: " + this.date_in.getValue() );

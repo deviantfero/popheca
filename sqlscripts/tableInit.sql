@@ -15,6 +15,7 @@ create table Reserva(
 	numAdultos int not null,
 	numNinnos int,
 	idUsuario int not null,
+	idfactura int not null,
 	idEstado int not null,
 	codTransporte int,
 	idHotel int not null
